@@ -22,7 +22,8 @@ namespace M2_Gestion_Flexible_Chariot
 
         static void AffichageMenuPrincipale()
         {
-            Console.WriteLine("*************** Menu ***************\n\n");
+            Console.Clear();
+            Console.WriteLine("*************** Menu ***************\n");
             Console.WriteLine("1. Recettes");
             Console.WriteLine("2. Lots");
             Console.WriteLine("3. Historique des lots\n");
@@ -69,9 +70,11 @@ namespace M2_Gestion_Flexible_Chariot
             char choixMenuRecettes = ' ';
 
             Console.Clear();
-            Console.WriteLine("1. Création de recettes");
+            Console.WriteLine("******** Menu recettes ***********");
+            Console.WriteLine("\n1. Création de recettes");
             Console.WriteLine("2. Affichage des recettes créées");
-            Console.WriteLine("3. Revenir au menu principale");
+            Console.WriteLine("3. Effacer une recette");
+            Console.WriteLine("\n4. Revenir au menu principale");
             Console.Write("\nQuel est votre choix ? ");
             choixMenuRecettes = char.Parse(Console.ReadLine());
             Console.Write("\n");
@@ -86,7 +89,10 @@ namespace M2_Gestion_Flexible_Chariot
                     AffichageMenuRecettes();
                     break;
                 case '3':
-                    Console.Clear();
+                    EffacerRecettes();
+                    AffichageMenuRecettes();
+                    break;
+                case '4':
                     AffichageMenuPrincipale();
                     ChoixMenuPrincipale();
                     break;
@@ -136,8 +142,7 @@ namespace M2_Gestion_Flexible_Chariot
             } while (choixCréationRecette != 'N');
 
             Console.Clear();
-            AffichageMenuPrincipale();
-            ChoixMenuPrincipale();
+            AffichageMenuRecettes();
         }
 
         static void AffichageRecettes()
@@ -170,6 +175,33 @@ namespace M2_Gestion_Flexible_Chariot
             }
         }
 
+        static void EffacerRecettes()
+        { 
+            Console.Write("Veuillez saisir l'ID à effacer : ");
+            int id = int.Parse(Console.ReadLine());
+
+            try
+            {
+                using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                {
+                    cmd.CommandText = "DELETE FROM recette WHERE REC_ID = @id;";
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    int nbreEffacés = cmd.ExecuteNonQuery();
+                    Console.WriteLine("Nombre d'enregistrements effacés : {0}", nbreEffacés);
+                }
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine("Attention il y a eu le problème suivant : ");
+                Console.WriteLine(ex.Message);
+            }
+
+            Console.Write("Veuillez appuyer sur une touche pour continuer... ");
+            Console.ReadKey();
+
+        }
+
         static void CréationLots()
         {
 
@@ -191,7 +223,8 @@ namespace M2_Gestion_Flexible_Chariot
 
         static void QuitterProgramme()
         {
-
+            Console.Clear();
+            Console.WriteLine("\nMerci d'avoir utilisé cette application. :)");
         }
 
         static void AfficherTable()
