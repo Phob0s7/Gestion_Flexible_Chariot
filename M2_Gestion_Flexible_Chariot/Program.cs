@@ -14,6 +14,10 @@ namespace M2_Gestion_Flexible_Chariot
         static string nomRecette = "";
         static int IDRecette = 0;
 
+        /// <summary>
+        /// Point d'entrée du programme.
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
             GestionBaseDeDonnée.ConnectToDB("gestion_flexible_chariot", "root", "");
@@ -24,6 +28,9 @@ namespace M2_Gestion_Flexible_Chariot
             GestionBaseDeDonnée.DisconnectFromDB();
         }
 
+        /// <summary>
+        /// Permet d'afficher le menu principale.
+        /// </summary>
         static void AffichageMenuPrincipale()
         {
             Console.Clear();
@@ -34,6 +41,9 @@ namespace M2_Gestion_Flexible_Chariot
             Console.WriteLine("4. Quitter le programme\n");
         }
 
+        /// <summary>
+        /// Permet de saisir le choix de l'utilisateur en fonction du menu principale.
+        /// </summary>
         static void ChoixMenuPrincipale()
         {
             do
@@ -45,6 +55,7 @@ namespace M2_Gestion_Flexible_Chariot
                 {
                     case '1':
                         AffichageMenuRecettes();
+                        ChoixMenuRecettes();
                         break;
 
                     case '2':
@@ -66,32 +77,46 @@ namespace M2_Gestion_Flexible_Chariot
             } while (choixMenuPrincipale != '4');
         }
 
+        /// <summary>
+        /// Permet d'afficher le menu recettes.
+        /// </summary>
         static void AffichageMenuRecettes()
         {
-            char choixMenuRecettes = ' ';
-
             Console.Clear();
             Console.WriteLine("******** Menu recettes ***********");
             Console.WriteLine("\n1. Création de recettes");
             Console.WriteLine("2. Affichage des recettes créées");
-            Console.WriteLine("3. Effacer une recette");
-            Console.WriteLine("\n4. Revenir au menu principale");
-            Console.Write("\nQuel est votre choix ? ");
+            Console.WriteLine("3. Vider la table recette et pas");
+            Console.WriteLine("\n4. Revenir au menu principale\n");
+        }
+
+        /// <summary>
+        /// Permet de saisir le choix de l'utilisateur en fonction du menu recettes.
+        /// </summary>
+        static void ChoixMenuRecettes()
+        {
+            char choixMenuRecettes = ' ';
+
+            Console.Write("\nQuel est votre choix ? : ");
             choixMenuRecettes = char.Parse(Console.ReadLine());
-            Console.Write("\n");
 
             switch (choixMenuRecettes)
             {
                 case '1':
                     CréationRecettes();
+                    CréationPas();
+                    AffichageMenuRecettes();
+                    ChoixMenuRecettes();
                     break;
                 case '2':
                     AffichageRecettes();
                     AffichageMenuRecettes();
+                    ChoixMenuRecettes();
                     break;
                 case '3':
-                    EffacerRecettes();
+                    ViderTables();
                     AffichageMenuRecettes();
+                    ChoixMenuRecettes();
                     break;
                 case '4':
                     AffichageMenuPrincipale();
@@ -102,11 +127,14 @@ namespace M2_Gestion_Flexible_Chariot
             }
         }
 
+        /// <summary>
+        /// Permet de créer une recette.
+        /// </summary>
         static void CréationRecettes()
         {
+            long lastInsertedId = -1;
+
             Console.Clear();
-            Console.Write("Quel est l'ID de la recette : ");
-            IDRecette = int.Parse(Console.ReadLine());
             Console.Write("Veuillez saisir le nom de la recette : ");
             nomRecette = Console.ReadLine();
 
@@ -116,11 +144,17 @@ namespace M2_Gestion_Flexible_Chariot
             {
                 using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                 {
-                    cmd.CommandText = "INSERT INTO recette (REC_ID, REC_Nom, REC_DateCreation) VALUES (@IDRecette, @nomRecette, @dateCréation);";
+                    cmd.CommandText = "INSERT INTO recette (REC_Nom, REC_DateCreation) VALUES (@nomRecette, @dateCréation);";
 
-                    cmd.Parameters.AddWithValue("@IDRecette", IDRecette);
                     cmd.Parameters.AddWithValue("@nomRecette", nomRecette);
                     cmd.Parameters.AddWithValue("@dateCréation", dateTime);
+
+                    int nbreAjout = cmd.ExecuteNonQuery();
+                    Console.WriteLine("\nNombre d'enregistrements ajoutés : {0}\n", nbreAjout);
+                    lastInsertedId = cmd.LastInsertedId;
+                    Console.Write("Veuillez appuyer sur une touche pour continuer... ");
+                    Console.ReadKey();
+                    Console.WriteLine("\n");
                 }
 
             }
@@ -130,7 +164,6 @@ namespace M2_Gestion_Flexible_Chariot
                 Console.WriteLine(ex.Message);
                 Console.ReadKey();
             }
-
         }
 
         static void AffichageRecettes()
@@ -146,7 +179,7 @@ namespace M2_Gestion_Flexible_Chariot
                         int compteur = 0;
                         while (reader.Read())
                         {
-                            Console.WriteLine("{0} {1} {2}", reader["REC_ID"], reader["REC_Nom"], reader["REC_DateCreation"]);
+                            Console.WriteLine("\n{0} {1} {2}", reader["REC_ID"], reader["REC_Nom"], reader["REC_DateCreation"]);
                             compteur++;
                         }
 
@@ -176,8 +209,17 @@ namespace M2_Gestion_Flexible_Chariot
                     cmd.Parameters.AddWithValue("@id", id);
 
                     int nbreEffacés = cmd.ExecuteNonQuery();
+                }
+
+                using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                {
+                    cmd.CommandText = "UPDATE recette SET REC_ID = '1'";
+
+                    int nbreEffacés = cmd.ExecuteNonQuery();
                     Console.WriteLine("Nombre d'enregistrements effacés : {0}\n", nbreEffacés);
                 }
+
+
             }
             catch (MySqlException ex)
             {
@@ -190,6 +232,32 @@ namespace M2_Gestion_Flexible_Chariot
 
         }
 
+        static void ViderTables()
+        {
+            try
+            {
+                using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                {
+                    cmd.CommandText = "DELETE FROM recette; DELETE FROM pas";
+
+                    int nbreEffacés = cmd.ExecuteNonQuery();
+                    Console.WriteLine("Nombre de table effacés : {0}\n", nbreEffacés);
+                }
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine("Attention il y a eu le problème suivant : ");
+                Console.WriteLine(ex.Message);
+                Console.ReadKey();
+            }
+
+            Console.Write("Veuillez appuyer sur une touche pour continuer... ");
+            Console.ReadKey();
+        }
+
+        /// <summary>
+        /// Permet de créer un pas.
+        /// </summary>
         static void CréationPas()
         {
             int IDPas = 0;
@@ -204,8 +272,6 @@ namespace M2_Gestion_Flexible_Chariot
 
             do
             {
-                Console.Write("Quel est l'ID du pas : ");
-                IDPas = int.Parse(Console.ReadLine());
                 Console.Write("Quel est le numéro du pas ? : ");
                 numéroPas = int.Parse(Console.ReadLine());
                 Console.Write("Quel est le nom du pas ? : ");
@@ -214,17 +280,19 @@ namespace M2_Gestion_Flexible_Chariot
                 positionPas = int.Parse(Console.ReadLine());
                 Console.Write("Quel est la durée du pas (secondes) ? : ");
                 tempsPas = int.Parse(Console.ReadLine());
-                Console.Write("Est-ce qu'il est nécessaire de quittancer le pas ? : ");
+                Console.Write("Est-ce qu'il est nécessaire de quittancer le pas (true ou false) ? : ");
                 quittancePas = bool.Parse(Console.ReadLine());
-                Console.Write("A quelle recette le pas doit-il être associé ? : ");
+                AffichageRecettes();
+                Console.Write("\n\nQuelle est la recette qu'il faut associer pour le pas ? : ");
                 choixIDRecettePourPas = int.Parse(Console.ReadLine());
+
 
                 try
                 {
                     using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                     {
-                        cmd.CommandText = "INSERT INTO pas (PAS_ID, PAS_Numero, PAS_Nom, PAS_Position, PAS_Temps, PAS_Quittance, REC_ID) VALUES (@IDPas, @numéro, @nomPas, @position, @temps, @quittance, @IDREC);";
-                        cmd.Parameters.AddWithValue("@IDPas", IDPas);
+                        cmd.CommandText = "INSERT INTO pas (PAS_Numero, PAS_Nom, PAS_Position, PAS_Temps, PAS_Quittance, REC_ID) VALUES (@numéro, @nomPas, @position, @temps, @quittance, @IDREC);";
+
                         cmd.Parameters.AddWithValue("@numéro", numéroPas);
                         cmd.Parameters.AddWithValue("@nomPas", nomPas);
                         cmd.Parameters.AddWithValue("@position", positionPas);
@@ -236,10 +304,9 @@ namespace M2_Gestion_Flexible_Chariot
                         Console.WriteLine("Nombre d'enregistrements ajoutés : {0}", nbreAjout);
                         lastInsertedId = cmd.LastInsertedId;
 
-                        Console.Write("\nVoulez-vous créer à nouveau une recette ? (O/N) ");
+                        Console.Write("\nVoulez-vous créer à nouveau une recette ? (O/N) \n");
 
                         choixCréationRecette = char.Parse(Console.ReadLine());
-
                     }
                 }
                 catch (MySqlException ex)
@@ -249,9 +316,6 @@ namespace M2_Gestion_Flexible_Chariot
                     Console.ReadKey();
                 }
             } while (choixCréationRecette != 'N');
-
-            Console.Clear();
-            AffichageMenuRecettes();
         }
 
         static void CréationLots()
