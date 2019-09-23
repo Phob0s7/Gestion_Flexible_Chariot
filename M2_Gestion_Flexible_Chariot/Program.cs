@@ -86,8 +86,9 @@ namespace M2_Gestion_Flexible_Chariot
             Console.WriteLine("******** Menu recettes ***********");
             Console.WriteLine("\n1. Création de recettes");
             Console.WriteLine("2. Affichage des recettes créées");
-            Console.WriteLine("3. Vider la table recette et pas");
-            Console.WriteLine("\n4. Revenir au menu principale\n");
+            Console.WriteLine("3. Vider la table pas");
+            Console.WriteLine("4. Réinitialiser la table recette");
+            Console.WriteLine("\n5. Revenir au menu principale\n");
         }
 
         /// <summary>
@@ -114,11 +115,17 @@ namespace M2_Gestion_Flexible_Chariot
                     ChoixMenuRecettes();
                     break;
                 case '3':
-                    ViderTables();
+                    ViderTablePas();
                     AffichageMenuRecettes();
                     ChoixMenuRecettes();
                     break;
                 case '4':
+                    SupprimmerTableRecette();
+;                   AjouterTableRecette();
+                    AffichageMenuRecettes();
+                    ChoixMenuRecettes();
+                    break;
+                case '5':
                     AffichageMenuPrincipale();
                     ChoixMenuPrincipale();
                     break;
@@ -132,8 +139,6 @@ namespace M2_Gestion_Flexible_Chariot
         /// </summary>
         static void CréationRecettes()
         {
-            long lastInsertedId = -1;
-
             Console.Clear();
             Console.Write("Veuillez saisir le nom de la recette : ");
             nomRecette = Console.ReadLine();
@@ -150,8 +155,7 @@ namespace M2_Gestion_Flexible_Chariot
                     cmd.Parameters.AddWithValue("@dateCréation", dateTime);
 
                     int nbreAjout = cmd.ExecuteNonQuery();
-                    Console.WriteLine("\nNombre d'enregistrements ajoutés : {0}\n", nbreAjout);
-                    lastInsertedId = cmd.LastInsertedId;
+                    Console.WriteLine("\nNombre de recette ajoutés : {0}\n", nbreAjout);
                     Console.Write("Veuillez appuyer sur une touche pour continuer... ");
                     Console.ReadKey();
                     Console.WriteLine("\n");
@@ -235,17 +239,82 @@ namespace M2_Gestion_Flexible_Chariot
 
         }
 
-        static void ViderTables()
+        /// <summary>
+        /// Permet de vider la table Pas.
+        /// </summary>
+        static void ViderTablePas()
+        {
+
+            try
+            {
+                using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                {
+                    cmd.CommandText = "DELETE FROM pas";
+
+                    int nbreEffacés = cmd.ExecuteNonQuery();
+                    Console.WriteLine("\nNombre de pas effacés : {0}\n", nbreEffacés);
+
+                    GestionBaseDeDonnée.connexion.Close();
+                }
+
+                using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                {
+                    GestionBaseDeDonnée.connexion.Open();
+
+                    cmd.CommandText = "UPDATE pas SET PAS_ID = '0'";
+
+                    int nbreEffacés = cmd.ExecuteNonQuery();
+                    Console.WriteLine("\nNombre de pas effacés : {0}\n", nbreEffacés);
+                }
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine("Attention il y a eu le problème suivant : ");
+                Console.WriteLine(ex.Message);
+                Console.ReadKey();
+            }
+
+            Console.Write("Veuillez appuyer sur une touche pour continuer... ");
+            Console.ReadKey();
+        }
+
+        static void AjouterTableRecette()
         {
             try
             {
                 using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                 {
-                    cmd.CommandText = "DELETE FROM recette";
-                    cmd.CommandText = "DELETE FROM pas";
+                    cmd.CommandText = "CREATE TABLE recette (REC_ID INT(11),REC_Nom varchar(50),REC_DateCreation datetime)";
 
                     int nbreEffacés = cmd.ExecuteNonQuery();
-                    Console.WriteLine("Nombre de table effacés : {0}\n", nbreEffacés);
+                    Console.WriteLine("\nNombre de table effacée : {0}\n", nbreEffacés);
+                }
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine("Attention il y a eu le problème suivant : ");
+                Console.WriteLine(ex.Message);
+                Console.ReadKey();
+            }
+
+            Console.Write("Veuillez appuyer sur une touche pour continuer... ");
+            Console.ReadKey();
+        }
+
+
+        /// <summary>
+        /// Permet de supprimmer la table des recettes.
+        /// </summary>
+        static void SupprimmerTableRecette()
+        {
+            try
+            {
+                using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                {
+                    cmd.CommandText = "DROP TABLE recette";
+
+                    int nbreEffacés = cmd.ExecuteNonQuery();
+                    Console.WriteLine("\nNombre de table effacée : {0}\n", nbreEffacés);
                 }
             }
             catch (MySqlException ex)
@@ -270,9 +339,8 @@ namespace M2_Gestion_Flexible_Chariot
             int positionPas = 0;
             int tempsPas = 0;
             bool quittancePas = false;
-            long lastInsertedId = -1;
             char choixCréationRecette = ' ';
-            int choixIDRecettePourPas = 0;
+            int IDRecette = 0;
 
             do
             {
@@ -288,8 +356,7 @@ namespace M2_Gestion_Flexible_Chariot
                 quittancePas = bool.Parse(Console.ReadLine());
                 AffichageRecettes();
                 Console.Write("\n\nQuelle est la recette qu'il faut associer pour le pas ? : ");
-                choixIDRecettePourPas = int.Parse(Console.ReadLine());
-
+                IDRecette = int.Parse(Console.ReadLine());
 
                 try
                 {
@@ -300,17 +367,16 @@ namespace M2_Gestion_Flexible_Chariot
                         cmd.Parameters.AddWithValue("@numéro", numéroPas);
                         cmd.Parameters.AddWithValue("@nomPas", nomPas);
                         cmd.Parameters.AddWithValue("@position", positionPas);
-                        cmd.Parameters.AddWithValue("@temps", positionPas);
+                        cmd.Parameters.AddWithValue("@temps", tempsPas);
                         cmd.Parameters.AddWithValue("@quittance", quittancePas);
-                        cmd.Parameters.AddWithValue("@IDREC", choixIDRecettePourPas);
+                        cmd.Parameters.AddWithValue("@IDREC", IDRecette);
+
+                        Console.Write("\nVoulez-vous créer à nouveau une recette (O/N) ? : ");
+
+                        choixCréationRecette = char.Parse(Console.ReadLine().ToUpper());
 
                         int nbreAjout = cmd.ExecuteNonQuery();
                         Console.WriteLine("Nombre d'enregistrements ajoutés : {0}", nbreAjout);
-                        lastInsertedId = cmd.LastInsertedId;
-
-                        Console.Write("\nVoulez-vous créer à nouveau une recette ? (O/N) \n");
-
-                        choixCréationRecette = char.Parse(Console.ReadLine());
                     }
                 }
                 catch (MySqlException ex)
@@ -420,8 +486,7 @@ namespace M2_Gestion_Flexible_Chariot
 
         static void SwitchDefault()
         {
-            Console.Clear();
-            Console.WriteLine("\nVeuillez appuyer sur une touche pour recommencer la saisie.");
+            Console.Write("\nVeuillez appuyer sur une touche pour recommencer la saisie... ");
             Console.WriteLine(Console.ReadKey());
             Console.Clear();
             AffichageMenuPrincipale();
@@ -582,6 +647,8 @@ namespace M2_Gestion_Flexible_Chariot
             }
             return count;
         }
-
     }
+
 }
+
+

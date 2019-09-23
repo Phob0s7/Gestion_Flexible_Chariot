@@ -7,9 +7,9 @@ using MySql.Data.MySqlClient;
 
 namespace M2_Gestion_Flexible_Chariot
 {
-    class GestionBaseDeDonnée
+   static class GestionBaseDeDonnée
     {
-        static private MySqlConnection connexion;
+        static public MySqlConnection connexion;
 
         /// <summary>
         /// Etablit une connexion à la base de données.
