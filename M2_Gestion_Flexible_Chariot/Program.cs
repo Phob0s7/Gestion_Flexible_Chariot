@@ -166,6 +166,9 @@ namespace M2_Gestion_Flexible_Chariot
             }
         }
 
+        /// <summary>
+        /// Permet d'afficher la liste des recettes.
+        /// </summary>
         static void AffichageRecettes()
         {
             try
@@ -238,7 +241,8 @@ namespace M2_Gestion_Flexible_Chariot
             {
                 using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                 {
-                    cmd.CommandText = "DELETE FROM recette; DELETE FROM pas";
+                    cmd.CommandText = "DELETE FROM recette";
+                    cmd.CommandText = "DELETE FROM pas";
 
                     int nbreEffacés = cmd.ExecuteNonQuery();
                     Console.WriteLine("Nombre de table effacés : {0}\n", nbreEffacés);
@@ -318,11 +322,97 @@ namespace M2_Gestion_Flexible_Chariot
             } while (choixCréationRecette != 'N');
         }
 
+        /// <summary>
+        /// Permet de créer un lot.
+        /// </summary>
         static void CréationLots()
         {
+            int qtePièceRéalisée = 0;
+            int qtePièceAProduire = 0;
+            int IDRecette = 0;
+            int IDStatut = 0;
+            char choixCréationRecette = ' ';
+            long lastInsertedId = 0;
 
+            DateTime dateTime = DateTime.Now;
+
+            do
+            {
+                Console.Write("\nQuelle est la quantité de pièce réalisée ? : ");
+                qtePièceRéalisée = int.Parse(Console.ReadLine());
+                Console.Write("Quelle est la quantité de pièce à produire ? : ");
+                qtePièceAProduire = int.Parse(Console.ReadLine());
+                AffichageRecettes();
+                Console.Write("\n\nQuelle est l'ID de la recette a associer à ce lot ? : ");
+                IDRecette = int.Parse(Console.ReadLine());
+                AffichageStatut();
+                Console.Write("\n\nQuelle est l'ID du statut a associer à ce lot ? : ");
+                IDStatut = int.Parse(Console.ReadLine());
+
+
+                try
+                {
+                    using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                    {
+                        cmd.CommandText = "INSERT INTO lot (LOT_QtePieceRealisee, LOT_QtePieceAProduire, LOT_DateCreation, REC_ID, STA_ID) VALUES (@pièceRéalisée, @pièceProduire, @date, @RECID, @STAID);";
+
+                        cmd.Parameters.AddWithValue("@pièceRéalisée", qtePièceRéalisée);
+                        cmd.Parameters.AddWithValue("@pièceProduire", qtePièceAProduire);
+                        cmd.Parameters.AddWithValue("@date", dateTime);
+                        cmd.Parameters.AddWithValue("@RECID", IDRecette);
+                        cmd.Parameters.AddWithValue("@STAID", IDStatut);
+
+                        int nbreAjout = cmd.ExecuteNonQuery();
+                        Console.WriteLine("Nombre d'enregistrements ajoutés : {0}", nbreAjout);
+                        lastInsertedId = cmd.LastInsertedId;
+
+                        Console.Write("\nVoulez-vous créer à nouveau une recette ? (O/N) \n");
+
+                        choixCréationRecette = char.Parse(Console.ReadLine());
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    Console.WriteLine("Attention il y a eu le problème suivant : ");
+                    Console.WriteLine(ex.Message);
+                    Console.ReadKey();
+                }
+            } while (choixCréationRecette != 'N');
         }
 
+        /// <summary>
+        /// Permet d'afficher la liste des statuts.
+        /// </summary>
+        static void AffichageStatut()
+        {
+            try
+            {
+                using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                {
+                    cmd.CommandText = "SELECT * FROM statut";
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        int compteur = 0;
+                        while (reader.Read())
+                        {
+                            Console.WriteLine("\n{0} {1}", reader["STA_ID"], reader["STA_Libelle"]);
+                            compteur++;
+                        }
+
+                        Console.WriteLine("\n{0} statuts affichés.\n", compteur);
+                        Console.Write("Veuillez appuyer sur une touche pour continuer... ");
+                        Console.ReadKey();
+                    }
+                }
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine("Attention il y a eu le problème suivant : ");
+                Console.WriteLine(ex.Message);
+            }
+
+        }
         static void HistoriqueLots()
         {
 
