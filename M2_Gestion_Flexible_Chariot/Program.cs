@@ -60,11 +60,11 @@ namespace M2_Gestion_Flexible_Chariot
                         break;
 
                     case '2':
-                        
+
                         break;
 
                     case '3':
-                        
+
                         break;
 
                     case '4':
@@ -100,8 +100,8 @@ namespace M2_Gestion_Flexible_Chariot
             Console.WriteLine("******** Menu pas ***********");
             Console.WriteLine("\n1. Création de pas");
             Console.WriteLine("2. Affichage des pas");
-            Console.WriteLine("4. Effacer des pas");
-            Console.WriteLine("\n5. Revenir au menu principale\n");
+            Console.WriteLine("3. Effacer des pas");
+            Console.WriteLine("\n4. Revenir au menu principale\n");
         }
 
         /// <summary>
@@ -127,12 +127,14 @@ namespace M2_Gestion_Flexible_Chariot
                     ChoixMenuPas();
                     break;
                 case '3':
-
+                    AffichagePas();
+                    EffacerPas();
+                    AffichageMenuPas();
+                    ChoixMenuPas();
                     break;
                 case '4':
 
-                    break;
-                case '5':
+
 
                     break;
                 default:
@@ -235,6 +237,46 @@ namespace M2_Gestion_Flexible_Chariot
                 Console.WriteLine("Attention il y a eu le problème suivant : ");
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Permet d'effacer un pas.
+        /// </summary>
+        static void EffacerPas()
+        {
+            int nbreEffacés = 0;
+            char choixEffacerPas = ' ';
+
+            do
+            {
+                Console.Write("Veuillez saisir l'ID du pas à effacer : \n");
+                int id = int.Parse(Console.ReadLine());
+
+                try
+                {
+                    using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                    {
+                        cmd.CommandText = "DELETE FROM recette WHERE PAS_ID = @id;";
+                        cmd.Parameters.AddWithValue("@id", id);
+
+                        Console.Write("\nVoulez-vouz effacer un autre pas (O/N) ? : ");
+
+                        choixEffacerPas = char.Parse(Console.ReadLine().ToUpper());
+                        Console.Write("\n");
+                        nbreEffacés += cmd.ExecuteNonQuery();
+                    }
+
+                }
+                catch (MySqlException ex)
+                {
+                    Console.WriteLine("Attention il y a eu le problème suivant : ");
+                    Console.WriteLine(ex.Message);
+                }
+            } while (choixEffacerPas != 'N');
+
+            Console.WriteLine("Nombre d'enregistrements effacés : {0}\n", nbreEffacés);
+            Console.Write("Veuillez appuyer sur une touche pour continuer... ");
+            Console.ReadKey();
         }
 
 

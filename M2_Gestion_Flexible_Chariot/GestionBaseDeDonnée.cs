@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 
+
 namespace M2_Gestion_Flexible_Chariot
 {
    static class GestionBaseDeDonnée
@@ -30,6 +31,8 @@ namespace M2_Gestion_Flexible_Chariot
             catch (MySqlException ex)
             {
                 Console.WriteLine(ex.Message);
+                Console.Write("Veuillez appuyer sur une touche pour continuer... ");
+                Console.ReadKey();
             }
         }
 
