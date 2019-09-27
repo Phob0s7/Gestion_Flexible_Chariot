@@ -8,6 +8,9 @@ using MySql.Data.MySqlClient;
 
 namespace M2_Gestion_Flexible_Chariot
 {
+    /// <summary>
+    /// Classe qui contient le programme principale.
+    /// </summary>
     class Program
     {
         static char choixMenuPrincipale = ' ';
@@ -49,6 +52,12 @@ namespace M2_Gestion_Flexible_Chariot
         {
             do
             {
+                try
+                {
+
+                }
+                catch (Exception)
+                
                 Console.Write("Quel est votre choix ? : ");
                 choixMenuPrincipale = char.Parse(Console.ReadLine());
 
@@ -74,21 +83,23 @@ namespace M2_Gestion_Flexible_Chariot
                         break;
 
                     default:
-                        SwitchDefault();
+                        ErreurSaisieMenuPrincipale();
                         break;
                 }
             } while (choixMenuPrincipale != '4');
+
         }
 
         /// <summary>
         /// Permet d'écrire quelque chose par défaut lors d'une erreur.
         /// </summary>
-        static void SwitchDefault()
+        static void ErreurSaisieMenuPrincipale()
         {
-            Console.Write("\nVeuillez appuyer sur une touche pour recommencer la saisie... ");
+            Console.Write("\nErreur de saisie, veuillez appuyer sur une touche pour recommencer la saisie... ");
             Console.WriteLine(Console.ReadKey());
             Console.Clear();
             AffichageMenuPrincipale();
+            ChoixMenuPrincipale();
         }
 
         /*------------------------------------------------------------------------------------------ MENU DES PAS -------------------------------------------------------------------------------------*/
@@ -139,8 +150,21 @@ namespace M2_Gestion_Flexible_Chariot
                     ChoixMenuPrincipale();
                     break;
                 default:
+                    ErreurSaisieMenuPas();
                     break;
             }
+        }
+
+        /// <summary>
+        /// Permet d'écrire quelque chose par défaut lors d'une erreur.
+        /// </summary>
+        static void ErreurSaisieMenuPas()
+        {
+            Console.Write("\nErreur de saisie, veuillez appuyer sur une touche pour recommencer la saisie... ");
+            Console.WriteLine(Console.ReadKey());
+            Console.Clear();
+            AffichageMenuPas();
+            ChoixMenuPas();
         }
 
 
@@ -157,24 +181,24 @@ namespace M2_Gestion_Flexible_Chariot
 
             do
             {
-                Console.Clear();
-                Console.WriteLine("\tPas n° " + nombrePas);
-                Console.Write("\nQuel est le numéro du pas ? : ");
-                int numéroPas = int.Parse(Console.ReadLine());
-                Console.Write("Quel est le nom du pas ? : ");
-                string nomPas = Console.ReadLine();
-                Console.Write("Quel est la postion du pas (1 à 5) ? : ");
-                int positionPas = int.Parse(Console.ReadLine());
-                Console.Write("Quel est la durée du pas (secondes) ? : ");
-                int tempsPas = int.Parse(Console.ReadLine());
-                Console.Write("Est-ce qu'il est nécessaire de quittancer le pas (true ou false) ? : ");
-                bool quittancePas = bool.Parse(Console.ReadLine());
-                AffichageRecettes();
-                Console.Write("\n\nQuelle est la recette qu'il faut associer pour le pas ? : ");
-                int IDRecette = int.Parse(Console.ReadLine());
-
                 try
                 {
+                    Console.Clear();
+                    Console.WriteLine("\tPas n° " + nombrePas);
+                    Console.Write("\nQuel est le numéro du pas ? : ");
+                    int numéroPas = int.Parse(Console.ReadLine());
+                    Console.Write("Quel est le nom du pas ? : ");
+                    string nomPas = Console.ReadLine();
+                    int positionPas = SaisiePositionPas();
+                    Console.Write("Quel est la durée du pas (secondes) ? : ");
+                    int tempsPas = int.Parse(Console.ReadLine());
+                    Console.Write("Est-ce qu'il est nécessaire de quittancer le pas (true ou false) ? : ");
+                    bool quittancePas = bool.Parse(Console.ReadLine());
+                    AffichageRecettes();
+                    Console.Write("\n\nQuelle est la recette qu'il faut associer pour le pas ? : ");
+                    int IDRecette = int.Parse(Console.ReadLine());
+
+
                     using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                     {
                         cmd.CommandText = "INSERT INTO pas (PAS_Numero, PAS_Nom, PAS_Position, PAS_Temps, PAS_Quittance, REC_ID) VALUES (@numéro, @nomPas, @position, @temps, @quittance, @IDREC);";
@@ -200,10 +224,36 @@ namespace M2_Gestion_Flexible_Chariot
                     Console.WriteLine(ex.Message);
                     Console.ReadKey();
                 }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine("Attention il y a eu le problème suivant : ");
+                    Console.WriteLine(ex.Message);
+                    Console.ReadKey();
+                }
             } while (choixCréationPas != 'N');
             Console.WriteLine("Nombre de pas ajoutés : {0}\n", nbreAjout);
             Console.Write("Veuillez appuyer sur une touche pour continuer... ");
             Console.ReadKey();
+        }
+
+        /// <summary>
+        /// Permet de définir les valeurs de valadité d'une position.
+        /// </summary>
+        static int SaisiePositionPas()
+        {
+            int positionPas = 0;
+
+            do
+            {
+            Console.Write("Quel est la position du pas (1 à 5) ? : ");
+            positionPas = int.Parse(Console.ReadLine());
+                if (positionPas < 1 || positionPas > 5)
+                {
+                    Console.WriteLine("\nLa valeur doit être comprise entre 1 et 5, veuillez recommencer la saisie.\n");
+                }
+            } while (positionPas < 1 || positionPas > 5);
+
+            return positionPas;
         }
 
         /// <summary>
@@ -252,7 +302,7 @@ namespace M2_Gestion_Flexible_Chariot
 
             do
             {
-                Console.Write("\nVeuillez saisir l'ID du pas à effacer : ");
+                Console.Write("\n\nVeuillez saisir l'ID du pas à effacer : ");
                 int id = int.Parse(Console.ReadLine());
 
                 try
@@ -334,9 +384,22 @@ namespace M2_Gestion_Flexible_Chariot
                     ChoixMenuPrincipale();
                     break;
                 default:
+                    ErreurSaisieMenuRecette();
                     break;
             }
 
+        }
+
+        /// <summary>
+        /// Permet d'écrire quelque chose par défaut lors d'une erreur.
+        /// </summary>
+        static void ErreurSaisieMenuRecette()
+        {
+            Console.Write("\nErreur de saisie, veuillez appuyer sur une touche pour recommencer la saisie... ");
+            Console.WriteLine(Console.ReadKey());
+            Console.Clear();
+            AffichageMenuRecettes();
+            ChoixMenuRecettes();
         }
 
         /// <summary>
@@ -512,10 +575,25 @@ namespace M2_Gestion_Flexible_Chariot
                     ChoixMenuPrincipale();
                     break;
                 default:
+                    ErreurSaisieMenuLots();
                     break;
             }
 
         }
+
+        /// <summary>
+        /// Permet d'écrire quelque chose par défaut lors d'une erreur.
+        /// </summary>
+        static void ErreurSaisieMenuLots()
+        {
+            Console.Write("\nErreur de saisie, veuillez appuyer sur une touche pour recommencer la saisie... ");
+            Console.WriteLine(Console.ReadKey());
+            Console.Clear();
+            AffichageMenuLots();
+            ChoixMenuLots();
+        }
+
+
 
         /// <summary>
         /// Permet de créer un lot.
@@ -663,7 +741,6 @@ namespace M2_Gestion_Flexible_Chariot
         /// </summary>
         static void FinProgramme()
         {
-            choixMenuPrincipale = '4';
             Console.Clear();
             Console.WriteLine("\nMerci d'avoir utilisé cette application. :)\n");
         }
