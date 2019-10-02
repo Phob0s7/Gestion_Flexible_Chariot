@@ -5,6 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 
+/*A FAIRE
+ * - Try catch pour chaque fonctions
+ * */
+
+
 
 namespace M2_Gestion_Flexible_Chariot
 {
@@ -54,40 +59,45 @@ namespace M2_Gestion_Flexible_Chariot
             {
                 try
                 {
-
+                    Console.Write("Quel est votre choix ? : ");
+                    choixMenuPrincipale = char.Parse(Console.ReadLine());
                 }
-                catch (Exception)
-                
-                Console.Write("Quel est votre choix ? : ");
-                choixMenuPrincipale = char.Parse(Console.ReadLine());
+
+                catch (System.FormatException ex)
+                {
+                    Console.Write("\nAttention il y a eu le problème suivant : ");
+                    Console.Write(ex.Message);
+                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
+                    Console.ReadKey();
+                    Console.Write("\n\n");
+                }
 
                 switch (choixMenuPrincipale)
-                {
-                    case '1':
-                        AffichageMenuPas();
-                        ChoixMenuPas();
-                        break;
+                    {
+                        case '1':
+                            AffichageMenuPas();
+                            ChoixMenuPas();
+                            break;
 
-                    case '2':
-                        AffichageMenuRecettes();
-                        ChoixMenuRecettes();
-                        break;
+                        case '2':
+                            AffichageMenuRecettes();
+                            ChoixMenuRecettes();
+                            break;
 
-                    case '3':
-                        AffichageMenuLots();
-                        ChoixMenuLots();
-                        break;
+                        case '3':
+                            AffichageMenuLots();
+                            ChoixMenuLots();
+                            break;
 
-                    case '4':
-                        FinProgramme();
-                        break;
+                        case '4':
+                            FinProgramme();
+                            break;
 
-                    default:
-                        ErreurSaisieMenuPrincipale();
-                        break;
-                }
+                        default:
+                            //ErreurSaisieMenuPrincipale();
+                            break;
+                    }
             } while (choixMenuPrincipale != '4');
-
         }
 
         /// <summary>
@@ -178,6 +188,10 @@ namespace M2_Gestion_Flexible_Chariot
             int nbreAjout = 0;
             char choixCréationPas = ' ';
             int nombrePas = 1;
+            int numéroPas = 0;
+            string nomPas = "";
+            int positionPas = 0;
+            int tempsPas = 0;
 
             do
             {
@@ -186,14 +200,32 @@ namespace M2_Gestion_Flexible_Chariot
                     Console.Clear();
                     Console.WriteLine("\tPas n° " + nombrePas);
                     Console.Write("\nQuel est le numéro du pas ? : ");
-                    int numéroPas = int.Parse(Console.ReadLine());
+                    numéroPas = int.Parse(Console.ReadLine());
                     Console.Write("Quel est le nom du pas ? : ");
-                    string nomPas = Console.ReadLine();
-                    int positionPas = SaisiePositionPas();
-                    Console.Write("Quel est la durée du pas (secondes) ? : ");
-                    int tempsPas = int.Parse(Console.ReadLine());
-                    Console.Write("Est-ce qu'il est nécessaire de quittancer le pas (true ou false) ? : ");
-                    bool quittancePas = bool.Parse(Console.ReadLine());
+                    nomPas = Console.ReadLine();
+                    positionPas = SaisiePositionPas();
+                    tempsPas = SaisieDuréePas();
+
+                }
+                catch (MySqlException ex)
+                {
+                    Console.Write("\nAttention il y a eu le problème suivant : ");
+                    Console.Write(ex.Message);
+                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
+                    Console.ReadKey();
+                    Console.Write("\n\n");
+                }
+                catch (FormatException ex)
+                {
+                    Console.Write("\nAttention il y a eu le problème suivant : ");
+                    Console.Write(ex.Message);
+                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
+                    Console.ReadKey();
+                    Console.Write("\n\n");
+                }
+                bool quittancePas = SaisieQuittancePas();
+                try
+                {
                     AffichageRecettes();
                     Console.Write("\n\nQuelle est la recette qu'il faut associer pour le pas ? : ");
                     int IDRecette = int.Parse(Console.ReadLine());
@@ -217,18 +249,23 @@ namespace M2_Gestion_Flexible_Chariot
                         nbreAjout = nbreAjout + cmd.ExecuteNonQuery();
                         nombrePas++;
                     }
+
                 }
                 catch (MySqlException ex)
                 {
-                    Console.WriteLine("Attention il y a eu le problème suivant : ");
-                    Console.WriteLine(ex.Message);
+                    Console.Write("\nAttention il y a eu le problème suivant : ");
+                    Console.Write(ex.Message);
+                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
                     Console.ReadKey();
+                    Console.Write("\n\n");
                 }
                 catch (FormatException ex)
                 {
-                    Console.WriteLine("Attention il y a eu le problème suivant : ");
-                    Console.WriteLine(ex.Message);
+                    Console.Write("\nAttention il y a eu le problème suivant : ");
+                    Console.Write(ex.Message);
+                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
                     Console.ReadKey();
+                    Console.Write("\n\n");
                 }
             } while (choixCréationPas != 'N');
             Console.WriteLine("Nombre de pas ajoutés : {0}\n", nbreAjout);
@@ -245,8 +282,8 @@ namespace M2_Gestion_Flexible_Chariot
 
             do
             {
-            Console.Write("Quel est la position du pas (1 à 5) ? : ");
-            positionPas = int.Parse(Console.ReadLine());
+                Console.Write("Quel est la position du pas (1 à 5) ? : ");
+                positionPas = int.Parse(Console.ReadLine());
                 if (positionPas < 1 || positionPas > 5)
                 {
                     Console.WriteLine("\nLa valeur doit être comprise entre 1 et 5, veuillez recommencer la saisie.\n");
@@ -254,6 +291,54 @@ namespace M2_Gestion_Flexible_Chariot
             } while (positionPas < 1 || positionPas > 5);
 
             return positionPas;
+        }
+
+        /// <summary>
+        /// Permet de saisir la durée d'un pas.
+        /// </summary>
+        static int SaisieDuréePas()
+        {
+            int tempsPas = 0;
+
+            Console.Write("Quel est la durée du pas (secondes) ? : ");
+            tempsPas = int.Parse(Console.ReadLine());
+            if (tempsPas < -0)
+            {
+                tempsPas = 0;
+            }
+
+            return tempsPas;
+        }
+
+        /// <summary>
+        /// Permet de saisir la quittance du pas.
+        /// </summary>
+        /// <returns> La quittance booléenne.</returns>
+        static bool SaisieQuittancePas()
+        {
+            bool quittanceBooléen = false;
+            char quittancePas = ' ';
+
+            do
+            {
+                Console.Write("Est-ce qu'il est nécessaire de quittancer le pas 0(non) ou 1(oui) ? : ");
+                quittancePas = char.Parse(Console.ReadLine());
+                if (quittancePas == '0')
+                {
+                    quittanceBooléen = false;
+                }
+                else if (quittancePas == '1')
+                {
+                    quittanceBooléen = true;
+                }
+                else if (quittancePas != '0' && quittancePas != '1')
+                {
+                    Console.WriteLine("\nLa valeur saisie doit être 0 ou 1. Veuillez recommencer la saisie");
+                }
+
+            } while (quittancePas != '0' && quittancePas != '1');
+
+            return quittanceBooléen;
         }
 
         /// <summary>
@@ -287,8 +372,11 @@ namespace M2_Gestion_Flexible_Chariot
             }
             catch (MySqlException ex)
             {
-                Console.WriteLine("Attention il y a eu le problème suivant : ");
-                Console.WriteLine(ex.Message);
+                Console.Write("\nAttention il y a eu le problème suivant : ");
+                Console.Write(ex.Message);
+                Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
+                Console.ReadKey();
+                Console.Write("\n\n");
             }
         }
 
@@ -322,8 +410,11 @@ namespace M2_Gestion_Flexible_Chariot
                 }
                 catch (MySqlException ex)
                 {
-                    Console.WriteLine("Attention il y a eu le problème suivant : ");
-                    Console.WriteLine(ex.Message);
+                    Console.Write("\nAttention il y a eu le problème suivant : ");
+                    Console.Write(ex.Message);
+                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
+                    Console.ReadKey();
+                    Console.Write("\n\n");
                 }
             } while (choixEffacerPas != 'N');
 
@@ -440,9 +531,11 @@ namespace M2_Gestion_Flexible_Chariot
                 }
                 catch (MySqlException ex)
                 {
-                    Console.WriteLine("Attention il y a eu le problème suivant : ");
-                    Console.WriteLine(ex.Message);
+                    Console.Write("\nAttention il y a eu le problème suivant : ");
+                    Console.Write(ex.Message);
+                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
                     Console.ReadKey();
+                    Console.Write("\n\n");
                 }
             } while (choixAjouterRecette != 'N');
 
@@ -479,8 +572,11 @@ namespace M2_Gestion_Flexible_Chariot
             }
             catch (MySqlException ex)
             {
-                Console.WriteLine("Attention il y a eu le problème suivant : ");
-                Console.WriteLine(ex.Message);
+                Console.Write("\nAttention il y a eu le problème suivant : ");
+                Console.Write(ex.Message);
+                Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
+                Console.ReadKey();
+                Console.Write("\n\n");
             }
         }
 
@@ -513,8 +609,11 @@ namespace M2_Gestion_Flexible_Chariot
                 }
                 catch (MySqlException ex)
                 {
-                    Console.WriteLine("Attention il y a eu le problème suivant : ");
-                    Console.WriteLine(ex.Message);
+                    Console.Write("\nAttention il y a eu le problème suivant : ");
+                    Console.Write(ex.Message);
+                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
+                    Console.ReadKey();
+                    Console.Write("\n\n");
                 }
             } while (choixEffacerRecette != 'N');
 
@@ -649,9 +748,11 @@ namespace M2_Gestion_Flexible_Chariot
                 }
                 catch (MySqlException ex)
                 {
-                    Console.WriteLine("Attention il y a eu le problème suivant : ");
-                    Console.WriteLine(ex.Message);
+                    Console.Write("\nAttention il y a eu le problème suivant : ");
+                    Console.Write(ex.Message);
+                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
                     Console.ReadKey();
+                    Console.Write("\n\n");
                 }
             } while (choixCréationLots != 'N');
 
@@ -690,8 +791,11 @@ namespace M2_Gestion_Flexible_Chariot
             }
             catch (MySqlException ex)
             {
-                Console.WriteLine("Attention il y a eu le problème suivant : ");
-                Console.WriteLine(ex.Message);
+                Console.Write("\nAttention il y a eu le problème suivant : ");
+                Console.Write(ex.Message);
+                Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
+                Console.ReadKey();
+                Console.Write("\n\n");
             }
         }
 
@@ -724,8 +828,11 @@ namespace M2_Gestion_Flexible_Chariot
                 }
                 catch (MySqlException ex)
                 {
-                    Console.WriteLine("Attention il y a eu le problème suivant : ");
-                    Console.WriteLine(ex.Message);
+                    Console.Write("\nAttention il y a eu le problème suivant : ");
+                    Console.Write(ex.Message);
+                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
+                    Console.ReadKey();
+                    Console.Write("\n\n");
                 }
             } while (choixEffacerLot != 'N');
 
@@ -742,7 +849,7 @@ namespace M2_Gestion_Flexible_Chariot
         static void FinProgramme()
         {
             Console.Clear();
-            Console.WriteLine("\nMerci d'avoir utilisé cette application. :)\n");
+            Console.WriteLine("\nMerci d'avoir utilisé notre application. :)\n");
         }
 
         /*------------------------------------------------------------------------------------- STATUTS -----------------------------------------------------------------------------------------------*/
@@ -775,8 +882,11 @@ namespace M2_Gestion_Flexible_Chariot
             }
             catch (MySqlException ex)
             {
-                Console.WriteLine("Attention il y a eu le problème suivant : ");
-                Console.WriteLine(ex.Message);
+                Console.Write("\nAttention il y a eu le problème suivant : ");
+                Console.Write(ex.Message);
+                Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
+                Console.ReadKey();
+                Console.Write("\n\n");
             }
 
         }
@@ -814,9 +924,11 @@ namespace M2_Gestion_Flexible_Chariot
             }
             catch (MySqlException ex)
             {
-                Console.WriteLine("Attention il y a eu le problème suivant : ");
-                Console.WriteLine(ex.Message);
+                Console.Write("\nAttention il y a eu le problème suivant : ");
+                Console.Write(ex.Message);
+                Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
                 Console.ReadKey();
+                Console.Write("\n\n");
             }
 
             Console.Write("Veuillez appuyer sur une touche pour continuer... ");
@@ -837,9 +949,11 @@ namespace M2_Gestion_Flexible_Chariot
             }
             catch (MySqlException ex)
             {
-                Console.WriteLine("Attention il y a eu le problème suivant : ");
-                Console.WriteLine(ex.Message);
+                Console.Write("\nAttention il y a eu le problème suivant : ");
+                Console.Write(ex.Message);
+                Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
                 Console.ReadKey();
+                Console.Write("\n\n");
             }
 
             Console.Write("Veuillez appuyer sur une touche pour continuer... ");
@@ -864,9 +978,11 @@ namespace M2_Gestion_Flexible_Chariot
             }
             catch (MySqlException ex)
             {
-                Console.WriteLine("Attention il y a eu le problème suivant : ");
-                Console.WriteLine(ex.Message);
+                Console.Write("\nAttention il y a eu le problème suivant : ");
+                Console.Write(ex.Message);
+                Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
                 Console.ReadKey();
+                Console.Write("\n\n");
             }
 
             Console.Write("Veuillez appuyer sur une touche pour continuer... ");
@@ -899,8 +1015,11 @@ namespace M2_Gestion_Flexible_Chariot
             }
             catch (MySqlException ex)
             {
-                Console.WriteLine("Attention il y a eu le problème suivant : ");
-                Console.WriteLine(ex.Message);
+                Console.Write("\nAttention il y a eu le problème suivant : ");
+                Console.Write(ex.Message);
+                Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
+                Console.ReadKey();
+                Console.Write("\n\n");
             }
         }
 
