@@ -7,7 +7,10 @@ using MySql.Data.MySqlClient;
 
 /*A FAIRE
  * - Try catch pour chaque fonctions
+ * 
+ * Modifier la Création de pas, on doit créer le pas au moment de la recette avec une liste, ensuite, on utilie la méthode de création d upas.
  * */
+
 
 
 
@@ -18,7 +21,7 @@ namespace M2_Gestion_Flexible_Chariot
     /// </summary>
     class Program
     {
-        static char choixMenuPrincipale = ' ';
+        static string choixMenuPrincipale = "";
         static string nomRecette = "";
 
         /// <summary>
@@ -57,47 +60,35 @@ namespace M2_Gestion_Flexible_Chariot
         {
             do
             {
-                try
-                {
-                    Console.Write("Quel est votre choix ? : ");
-                    choixMenuPrincipale = char.Parse(Console.ReadLine());
-                }
-
-                catch (System.FormatException ex)
-                {
-                    Console.Write("\nAttention il y a eu le problème suivant : ");
-                    Console.Write(ex.Message);
-                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
-                    Console.ReadKey();
-                    Console.Write("\n\n");
-                }
+                Console.Write("Quel est votre choix ? : ");
+                choixMenuPrincipale = Console.ReadLine();
 
                 switch (choixMenuPrincipale)
-                    {
-                        case '1':
-                            AffichageMenuPas();
-                            ChoixMenuPas();
-                            break;
+                {
+                    case "1":
+                        AffichageMenuPas();
+                        ChoixMenuPas();
+                        break;
 
-                        case '2':
-                            AffichageMenuRecettes();
-                            ChoixMenuRecettes();
-                            break;
+                    case "2":
+                        AffichageMenuRecettes();
+                        ChoixMenuRecettes();
+                        break;
 
-                        case '3':
-                            AffichageMenuLots();
-                            ChoixMenuLots();
-                            break;
+                    case "3":
+                        AffichageMenuLots();
+                        ChoixMenuLots();
+                        break;
 
-                        case '4':
-                            FinProgramme();
-                            break;
+                    case "4":
+                        FinProgramme();
+                        break;
 
-                        default:
-                            //ErreurSaisieMenuPrincipale();
-                            break;
-                    }
-            } while (choixMenuPrincipale != '4');
+                    default:
+                        ErreurSaisieMenuPrincipale();
+                        break;
+                }
+            } while (choixMenuPrincipale != "4");
         }
 
         /// <summary>
@@ -105,8 +96,11 @@ namespace M2_Gestion_Flexible_Chariot
         /// </summary>
         static void ErreurSaisieMenuPrincipale()
         {
-            Console.Write("\nErreur de saisie, veuillez appuyer sur une touche pour recommencer la saisie... ");
-            Console.WriteLine(Console.ReadKey());
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write("\nVous n'avez pas saisi un caractère correcte.\n");
+            Console.ResetColor();
+            Console.Write("\nVeuillez réessayer en appuyant sur une touche...");
+            Console.ReadKey();
             Console.Clear();
             AffichageMenuPrincipale();
             ChoixMenuPrincipale();
@@ -132,30 +126,28 @@ namespace M2_Gestion_Flexible_Chariot
         /// </summary>
         static void ChoixMenuPas()
         {
-            char choixMenuPas = ' ';
+            string choixMenuPas = "";
 
             Console.Write("\nQuel est votre choix ? : ");
-            choixMenuPas = char.Parse(Console.ReadLine());
+            choixMenuPas = Console.ReadLine();
 
             switch (choixMenuPas)
             {
-                case '1':
+                case "1":
                     CréationPas();
                     AffichageMenuPas();
                     ChoixMenuPas();
                     break;
-                case '2':
+                case "2":
+                    AffichagePas();
+                    ChoixMenuPas();
+                    break;
+                case "3":
                     AffichagePas();
                     AffichageMenuPas();
                     ChoixMenuPas();
                     break;
-                case '3':
-                    AffichagePas();
-                    EffacerPas();
-                    AffichageMenuPas();
-                    ChoixMenuPas();
-                    break;
-                case '4':
+                case "4":
                     AffichageMenuPrincipale();
                     ChoixMenuPrincipale();
                     break;
@@ -170,8 +162,11 @@ namespace M2_Gestion_Flexible_Chariot
         /// </summary>
         static void ErreurSaisieMenuPas()
         {
-            Console.Write("\nErreur de saisie, veuillez appuyer sur une touche pour recommencer la saisie... ");
-            Console.WriteLine(Console.ReadKey());
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write("\nVous n'avez pas saisi un caractère correcte.\n");
+            Console.ResetColor();
+            Console.Write("\nVeuillez réessayer en appuyant sur une touche...");
+            Console.ReadKey();
             Console.Clear();
             AffichageMenuPas();
             ChoixMenuPas();
@@ -183,8 +178,6 @@ namespace M2_Gestion_Flexible_Chariot
         /// </summary>
         static void CréationPas()
         {
-            Console.Clear();
-
             int nbreAjout = 0;
             char choixCréationPas = ' ';
             int nombrePas = 1;
@@ -192,47 +185,27 @@ namespace M2_Gestion_Flexible_Chariot
             string nomPas = "";
             int positionPas = 0;
             int tempsPas = 0;
+            bool quittancePas = false;
+            int IDRecette = 0;
 
             do
             {
+                Console.Clear();
+
+                numéroPas = SaisieNuméroPas(ref nombrePas);
+                nomPas = SaisieNomPas();
+                positionPas = SaisiePositionPas();
+                tempsPas = SaisieDuréePas();
+                quittancePas = SaisieQuittancePas();
+                Console.WriteLine("\nListe des recettes\n");
+                AffichageRecettes();
+                IDRecette = SaisieIDRecette();
+
                 try
                 {
-                    Console.Clear();
-                    Console.WriteLine("\tPas n° " + nombrePas);
-                    Console.Write("\nQuel est le numéro du pas ? : ");
-                    numéroPas = int.Parse(Console.ReadLine());
-                    Console.Write("Quel est le nom du pas ? : ");
-                    nomPas = Console.ReadLine();
-                    positionPas = SaisiePositionPas();
-                    tempsPas = SaisieDuréePas();
-
-                }
-                catch (MySqlException ex)
-                {
-                    Console.Write("\nAttention il y a eu le problème suivant : ");
-                    Console.Write(ex.Message);
-                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
-                    Console.ReadKey();
-                    Console.Write("\n\n");
-                }
-                catch (FormatException ex)
-                {
-                    Console.Write("\nAttention il y a eu le problème suivant : ");
-                    Console.Write(ex.Message);
-                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
-                    Console.ReadKey();
-                    Console.Write("\n\n");
-                }
-                bool quittancePas = SaisieQuittancePas();
-                try
-                {
-                    AffichageRecettes();
-                    Console.Write("\n\nQuelle est la recette qu'il faut associer pour le pas ? : ");
-                    int IDRecette = int.Parse(Console.ReadLine());
-
-
                     using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                     {
+
                         cmd.CommandText = "INSERT INTO pas (PAS_Numero, PAS_Nom, PAS_Position, PAS_Temps, PAS_Quittance, REC_ID) VALUES (@numéro, @nomPas, @position, @temps, @quittance, @IDREC);";
 
                         cmd.Parameters.AddWithValue("@numéro", numéroPas);
@@ -243,34 +216,107 @@ namespace M2_Gestion_Flexible_Chariot
                         cmd.Parameters.AddWithValue("@IDREC", IDRecette);
 
                         Console.Write("\nVoulez-vous créer à nouveau un pas (O/N) ? : ");
-
                         choixCréationPas = char.Parse(Console.ReadLine().ToUpper());
                         Console.Write("\n");
                         nbreAjout = nbreAjout + cmd.ExecuteNonQuery();
                         nombrePas++;
                     }
-
                 }
                 catch (MySqlException ex)
                 {
                     Console.Write("\nAttention il y a eu le problème suivant : ");
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.Write(ex.Message);
+                    Console.ResetColor();
                     Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
                     Console.ReadKey();
                     Console.Write("\n\n");
                 }
+
                 catch (FormatException ex)
                 {
                     Console.Write("\nAttention il y a eu le problème suivant : ");
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.Write(ex.Message);
+                    Console.ResetColor();
                     Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
                     Console.ReadKey();
                     Console.Write("\n\n");
                 }
+
             } while (choixCréationPas != 'N');
+
             Console.WriteLine("Nombre de pas ajoutés : {0}\n", nbreAjout);
             Console.Write("Veuillez appuyer sur une touche pour continuer... ");
             Console.ReadKey();
+        }
+
+        /// <summary>
+        /// Permet de saisir le numéro du pas.
+        /// </summary>
+        static int SaisieNuméroPas(ref int nombrePas)
+        {
+            string saisieUtilisateur = "";
+            int numéroPas = 0;
+            bool saisieValide = false;
+
+            do
+            {
+                Console.WriteLine("\tPas n° " + nombrePas + "\n\n");
+
+                Console.Write("Quel est le numéro du pas ? : ");
+                saisieUtilisateur = Console.ReadLine();
+
+                if (!int.TryParse(saisieUtilisateur, out numéroPas))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\nVeuillez saisir une valeur correcte (nombre).\n");
+                    Console.ResetColor();
+                }
+
+                else
+                {
+                    numéroPas = int.Parse(saisieUtilisateur);
+                    saisieValide = true;
+                }
+
+            } while (saisieValide == false);
+
+            return numéroPas;
+        }
+        /// <summary>
+        /// Permet de saisir le nom du pas.
+        /// </summary>
+        /// <returns></returns>
+        static string SaisieNomPas()
+        {
+            string saisiUtilisateur = "";
+            float résultatConversionF = 0;
+            int résultatConversionI = 0;
+            string nomPas = "";
+            bool saisieValide = false;
+
+            do
+            {
+                Console.Write("Quel est le nom du pas ? : ");
+                saisiUtilisateur = Console.ReadLine();
+
+                if (int.TryParse(saisiUtilisateur, out résultatConversionI) || saisiUtilisateur == "" || float.TryParse(saisiUtilisateur, out résultatConversionF))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\nVeuillez saisir une valeur correcte (lettre(s)).\n");
+                    Console.ResetColor();
+                }
+
+                else
+                {
+                    nomPas = saisiUtilisateur;
+                    saisieValide = true;
+                }
+
+            } while (saisieValide == false);
+
+            return saisiUtilisateur;
         }
 
         /// <summary>
@@ -279,16 +325,28 @@ namespace M2_Gestion_Flexible_Chariot
         static int SaisiePositionPas()
         {
             int positionPas = 0;
+            string saisiUtilisateur = "";
+            bool saisieValide = false;
 
             do
             {
                 Console.Write("Quel est la position du pas (1 à 5) ? : ");
-                positionPas = int.Parse(Console.ReadLine());
-                if (positionPas < 1 || positionPas > 5)
+                saisiUtilisateur = Console.ReadLine();
+
+                if (!int.TryParse(saisiUtilisateur, out positionPas) || positionPas < 1 || positionPas > 5)
                 {
-                    Console.WriteLine("\nLa valeur doit être comprise entre 1 et 5, veuillez recommencer la saisie.\n");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\nVeuillez saisir une valeur entre 1 et 5.\n");
+                    Console.ResetColor();
                 }
-            } while (positionPas < 1 || positionPas > 5);
+
+                else
+                {
+                    positionPas = int.Parse(saisiUtilisateur);
+                    saisieValide = true;
+                }
+
+            } while (saisieValide == false);
 
             return positionPas;
         }
@@ -299,13 +357,28 @@ namespace M2_Gestion_Flexible_Chariot
         static int SaisieDuréePas()
         {
             int tempsPas = 0;
+            string saisieUtilisateur = "";
+            bool saisieValide = false;
 
-            Console.Write("Quel est la durée du pas (secondes) ? : ");
-            tempsPas = int.Parse(Console.ReadLine());
-            if (tempsPas < -0)
+            do
             {
-                tempsPas = 0;
-            }
+                Console.Write("Quel est la durée du pas (secondes) ? : ");
+                saisieUtilisateur = Console.ReadLine();
+
+                if (!int.TryParse(saisieUtilisateur, out tempsPas) || tempsPas < 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\nVeuillez saisir une valeur de mimimum 0.\n");
+                    Console.ResetColor();
+                }
+
+                else
+                {
+                    tempsPas = int.Parse(saisieUtilisateur);
+                    saisieValide = true;
+                }
+
+            } while (saisieValide == false);
 
             return tempsPas;
         }
@@ -317,28 +390,63 @@ namespace M2_Gestion_Flexible_Chariot
         static bool SaisieQuittancePas()
         {
             bool quittanceBooléen = false;
-            char quittancePas = ' ';
+            string quittancePas = "";
 
             do
             {
                 Console.Write("Est-ce qu'il est nécessaire de quittancer le pas 0(non) ou 1(oui) ? : ");
-                quittancePas = char.Parse(Console.ReadLine());
-                if (quittancePas == '0')
+                quittancePas = Console.ReadLine();
+                if (quittancePas == "0")
                 {
                     quittanceBooléen = false;
                 }
-                else if (quittancePas == '1')
+                else if (quittancePas == "1")
                 {
                     quittanceBooléen = true;
                 }
-                else if (quittancePas != '0' && quittancePas != '1')
+                else if (quittancePas != "0" && quittancePas != "1")
                 {
-                    Console.WriteLine("\nLa valeur saisie doit être 0 ou 1. Veuillez recommencer la saisie");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\nLa valeur saisie doit être 0 ou 1.\n");
+                    Console.ResetColor();
                 }
 
-            } while (quittancePas != '0' && quittancePas != '1');
+            } while (quittancePas != "0" && quittancePas != "1");
 
             return quittanceBooléen;
+        }
+
+        /// <summary>
+        /// Permet de saisir l'ID de la recette à associer.
+        /// </summary>
+        /// <returns></returns>
+        static int SaisieIDRecette()
+        {
+            int IDRecette = 0;
+            string saisieUtilisateur = "";
+            bool saisieValide = false;
+
+            do
+            {
+                Console.Write("\n\nQuelle est la recette qu'il faut associer pour le pas ? : ");
+                saisieUtilisateur = Console.ReadLine();
+
+                if (!int.TryParse(saisieUtilisateur, out IDRecette))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\nVeuillez saisir une valeur de mimimum 0.\n");
+                    Console.ResetColor();
+                }
+
+                else
+                {
+                    IDRecette = int.Parse(saisieUtilisateur);
+                    saisieValide = true;
+                }
+
+            } while (saisieValide == false);
+
+            return IDRecette;
         }
 
         /// <summary>
@@ -346,6 +454,8 @@ namespace M2_Gestion_Flexible_Chariot
         /// </summary>
         static void AffichagePas()
         {
+            int compteur = 0;
+
             Console.Clear();
             try
             {
@@ -356,7 +466,6 @@ namespace M2_Gestion_Flexible_Chariot
 
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
-                        int compteur = 0;
                         while (reader.Read())
                         {
                             Console.WriteLine("  {0}\t \t{1}\t \t\t{2}\t \t{3}\t {4}\t {5}\t {6}", reader["PAS_ID"], reader["PAS_Numero"], reader["PAS_Nom"],
@@ -367,6 +476,16 @@ namespace M2_Gestion_Flexible_Chariot
                         Console.WriteLine("\n{0} pas affichés.\n", compteur);
                         Console.Write("Veuillez appuyer sur une touche pour continuer... ");
                         Console.ReadKey();
+                    }
+
+                    if (compteur == 0)
+                    {
+                        AffichageMenuPas();
+                    }
+
+                    else
+                    {
+                        EffacerPas();
                     }
                 }
             }
@@ -385,11 +504,13 @@ namespace M2_Gestion_Flexible_Chariot
         /// </summary>
         static void EffacerPas()
         {
+
             int nbreEffacés = 0;
             char choixEffacerPas = ' ';
 
             do
             {
+                nbreEffacés = 0;
                 Console.Write("\n\nVeuillez saisir l'ID du pas à effacer : ");
                 int id = int.Parse(Console.ReadLine());
 
@@ -399,12 +520,23 @@ namespace M2_Gestion_Flexible_Chariot
                     {
                         cmd.CommandText = "DELETE FROM pas WHERE PAS_ID = @id;";
                         cmd.Parameters.AddWithValue("@id", id);
-
-                        Console.Write("\nVoulez-vouz effacer un autre pas (O/N) ? : ");
-
-                        choixEffacerPas = char.Parse(Console.ReadLine().ToUpper());
-                        Console.Write("\n");
                         nbreEffacés += cmd.ExecuteNonQuery();
+
+                        if (nbreEffacés == 0)
+                        {
+                            Console.WriteLine("L'ID saisi ne corresspond à aucun PAS_ID, veuillez recommencer la saisie.");
+                        }
+
+                        else
+                        {
+                            Console.Write("\nVoulez-vouz effacer un autre pas (O/N) ? : ");
+                            choixEffacerPas = char.Parse(Console.ReadLine().ToUpper());
+                            if (choixEffacerPas == 'O')
+                            {
+                                AffichagePas();
+                            }
+                            Console.Write("\n");
+                        }
                     }
 
                 }
@@ -416,7 +548,7 @@ namespace M2_Gestion_Flexible_Chariot
                     Console.ReadKey();
                     Console.Write("\n\n");
                 }
-            } while (choixEffacerPas != 'N');
+            } while (choixEffacerPas != 'N' || nbreEffacés == 0);
 
             Console.WriteLine("Nombre d'enregistrements effacés : {0}\n", nbreEffacés);
             Console.Write("Veuillez appuyer sur une touche pour continuer... ");
@@ -565,8 +697,6 @@ namespace M2_Gestion_Flexible_Chariot
                         }
 
                         Console.WriteLine("\n{0} recettes affichés.\n", compteur);
-                        Console.Write("Veuillez appuyer sur une touche pour continuer... ");
-                        Console.ReadKey();
                     }
                 }
             }
