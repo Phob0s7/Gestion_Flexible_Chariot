@@ -61,11 +61,14 @@ namespace M2_Gestion_Flexible_Chariot
                     ChoixMenuRecettes();
                     break;
                 case '4':
+
                     break;
                 case '5':
                     GestionPas.EffacerPas();
                     break;
                 case '6':
+                    GestionPas.AfficherPas();
+                    GestionPas.ModifierPas();
                     break;
                 case '7':
                     GestionMenuPrincipale.AffichageMenuPrincipale();
@@ -74,7 +77,6 @@ namespace M2_Gestion_Flexible_Chariot
                     ErreurSaisieMenuRecette();
                     break;
             }
-
         }
 
         /// <summary>

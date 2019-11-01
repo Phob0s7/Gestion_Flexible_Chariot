@@ -30,8 +30,11 @@ namespace M2_Gestion_Flexible_Chariot
             }
             catch (MySqlException ex)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("Problème lors de la connexion à la base de donnée : ");
                 Console.WriteLine(ex.Message);
-                Console.Write("Veuillez appuyer sur une touche pour continuer... ");
+                Console.ResetColor();
+                Console.Write("\nVeuillez appuyer sur une touche pour continuer... ");
                 Console.ReadKey();
             }
         }

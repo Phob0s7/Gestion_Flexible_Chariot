@@ -12,7 +12,7 @@ namespace M2_Gestion_Flexible_Chariot
         /// <summary>
         /// Permet de créer un pas.
         /// </summary>
-       public static void CréationPas(ref string IDRecette)
+        public static void CréationPas(ref string IDRecette)
         {
             int nbreAjout = 0;
             char choixCréationPas = ' ';
@@ -320,6 +320,45 @@ namespace M2_Gestion_Flexible_Chariot
         }
 
         /// <summary>
+        /// Affiche les pas existant.
+        /// </summary>
+        public static void AfficherPas()
+        {
+            try
+            {
+                using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                {
+                    cmd.CommandText = "SELECT * FROM pas ";
+                    Console.Write("\nID\t");
+                    Console.Write("Numéro\t\t".PadLeft(6));
+                    Console.Write(" Nom".PadLeft(12));
+                    Console.Write(" Position".PadLeft(12));
+                    Console.Write(" Temps".PadLeft(12));
+                    Console.Write(" Quittance".PadLeft(12));
+                    Console.WriteLine(" ID de la recette".PadLeft(12));
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        int compteur = 0;
+                        while (reader.Read())
+                        {
+                            Console.WriteLine("{0}\t {1}\t\t {2}\t\t {3}\t\t {4}\t\t {5}\t\t {6}\t\t".PadLeft(10), reader["PAS_ID"], reader["PAS_Numero"], reader["PAS_Nom"], reader["PAS_Position"],
+                                             reader["PAS_Temps"], reader["PAS_Quittance"], reader["REC_ID"]);
+                            compteur++;
+                        }
+
+                        Console.WriteLine("\n{0} pas affichées.\n", compteur);
+                    }
+                }
+            }
+            catch (MySqlException ex)
+            {
+                Console.Write("\nAttention il y a eu le problème suivant : ");
+                Console.Write(ex.Message);
+                Console.Write("\n\n");
+            }
+        }
+
+        /// <summary>
         /// Permet d'effacer un pas.
         /// </summary>
         public static void EffacerPas()
@@ -374,7 +413,43 @@ namespace M2_Gestion_Flexible_Chariot
             Console.ReadKey();
         }
 
+        /// <summary>
+        /// Affiche le menu permettant la modification d'un pas.
+        /// </summary>
+        public static void AfficherMenuModiferPas()
+        {
+            Console.WriteLine("1. Modification du numéro");
+            Console.WriteLine("2. Modification du nom");
+            Console.WriteLine("3. Modification de la postion");
+            Console.WriteLine("4. Modification du temps");
+            Console.WriteLine("5. Modification de la quittance");
+            Console.WriteLine("6. Modification de l'ID de la recette");
+        }
+        /// <summary>
+        /// Modifie les pas existants.
+        /// </summary>
+        public static void ModifierPas()
+        {
+            string saisieUtilisateur = "";
+            string saisieIDPas = "";
 
+            Console.Write("Choix du pas à modifier : ");
+            saisieIDPas = Console.ReadLine();
 
+            AfficherMenuModiferPas();
+
+            Console.Write("\nChoix de la modification d'un pas : ");
+            saisieUtilisateur = Console.ReadLine();
+
+            switch (saisieUtilisateur)
+            {
+                case "1":
+                    //SaisieNuméroPas()
+                    break;
+                default:
+                    break;
+            }
+
+        }
     }
 }

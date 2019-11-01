@@ -99,7 +99,7 @@ namespace M2_Gestion_Flexible_Chariot
                 GestionRecettes.AffichageRecettes();
                 Console.Write("Quelle est l'ID de la recette a associer à ce lot ? : ");
                 IDRecette = int.Parse(Console.ReadLine());
-                Program.AffichageStatut();
+                GestionStatuts.AffichageStatut();
                 Console.Write("\n\nQuelle est l'ID du statut a associer à ce lot ? : ");
                 IDStatut = int.Parse(Console.ReadLine());
 
