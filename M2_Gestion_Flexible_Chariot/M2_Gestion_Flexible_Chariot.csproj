@@ -45,6 +45,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GestionBaseDeDonnée.cs" />
+    <Compile Include="GestionEvénements.cs" />
+    <Compile Include="GestionLots.cs" />
+    <Compile Include="GestionPas.cs" />
+    <Compile Include="GestionRecettes.cs" />
+    <Compile Include="MenuPrincipale.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
