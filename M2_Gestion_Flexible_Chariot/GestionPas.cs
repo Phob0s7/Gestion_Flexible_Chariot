@@ -271,7 +271,7 @@ namespace M2_Gestion_Flexible_Chariot
             {
                 using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                 {
-                    cmd.CommandText = "SELECT REC_ID FROM recette";
+                    cmd.CommandText = "SELECT MAX(REC_ID) AS RECID, REC_Nom, REC_DateCreation FROM recette";
                     Console.Write("ID\t");
                     Console.Write("Nom\t\t".PadLeft(6));
                     Console.Write(" Date de création\n".PadLeft(12));
@@ -280,12 +280,11 @@ namespace M2_Gestion_Flexible_Chariot
                         int compteur = 0;
                         while (reader.Read())
                         {
-                            //Console.WriteLine("\n{0}\t {1}\t\t {2}".PadLeft(10), reader["REC_ID"], reader["REC_Nom"], reader["REC_DateCreation"]);
-                            Console.WriteLine("{0}", reader["REC_ID"]);
+                            Console.WriteLine("\n{0}\t {1}\t\t {2}".PadLeft(10), reader["RECID"], reader["REC_Nom"], reader["REC_DateCreation"]);
                             compteur++;
                         }
 
-                        Console.WriteLine(("\n{0} recettes affichées.\n", compteur));
+                        Console.WriteLine("\n{0} recettes affichées.\n", compteur);
                     }
                 }
             }
@@ -299,13 +298,13 @@ namespace M2_Gestion_Flexible_Chariot
 
             do
             {
-                Console.Write("\n\nEntrer le n° de l'ID de la recette : ");
+                Console.Write("Entrer le n° de l'ID de la recette : ");
                 saisieUtilisateur = Console.ReadLine();
 
                 if (saisieUtilisateur != IDRecette || !int.TryParse(saisieUtilisateur, out résultat))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Write("\nVeuillez saisir l'ID correcte de la recette à insérer.");
+                    Console.WriteLine("\nVeuillez saisir l'ID correcte de la recette à insérer.\n");
                     Console.ResetColor();
                 }
 

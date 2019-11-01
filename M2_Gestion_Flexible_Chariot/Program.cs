@@ -22,7 +22,7 @@ namespace M2_Gestion_Flexible_Chariot
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            GestionBaseDeDonnée.ConnectToDB("gestion_flexible_chariot", "root", "");
+            GestionBaseDeDonnée.ConnectToDB("gestion_flexible_chariot", "villsyl", "FF_Mania94");
             GestionMenuPrincipale.AffichageMenuPrincipale();
             GestionMenuPrincipale.ChoixMenuPrincipale();
             GestionBaseDeDonnée.DisconnectFromDB();
