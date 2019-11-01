@@ -19,8 +19,8 @@ namespace M2_Gestion_Flexible_Chariot
             Console.WriteLine("\t        *** Menu lots ***                       ");
             Console.WriteLine("__________________________________________________");
             Console.WriteLine("\n1. Création de lots");
-            Console.WriteLine("2. Historique de lots");
-            Console.WriteLine("3. Effacemment de lots");
+            Console.WriteLine("2. Effacement de lots");
+            Console.WriteLine("3. Edition de lots");
             Console.WriteLine("\n4. Revenir au menu principale");
             Console.WriteLine("__________________________________________________");
         }
@@ -41,21 +41,17 @@ namespace M2_Gestion_Flexible_Chariot
                     CréationLots();
                     AffichageMenuLots();
                     ChoixMenuLots();
-
                     break;
                 case '2':
-                    AffichageLots();
-                    AffichageMenuLots();
-                    ChoixMenuLots();
-                    break;
-                case '3':
                     AffichageLots();
                     EffacerLots();
                     AffichageMenuLots();
                     ChoixMenuLots();
                     break;
+                case '3':
+                    break;
                 case '4':
-                    MenuPrincipale.AffichageMenuPrincipale();
+                    GestionMenuPrincipale.AffichageMenuPrincipale();
                     break;
                 default:
                     ErreurSaisieMenuLots();
@@ -98,12 +94,10 @@ namespace M2_Gestion_Flexible_Chariot
                 Console.Clear();
 
                 Console.WriteLine("               Lot n° " + nbreLots);
-                Console.Write("\nQuelle est la quantité de pièce réalisée ? : ");
-                qtePièceRéalisée = int.Parse(Console.ReadLine());
-                Console.Write("Quelle est la quantité de pièce à produire ? : ");
+                Console.Write("\nQuelle est la quantité de pièce à produire ? : ");
                 qtePièceAProduire = int.Parse(Console.ReadLine());
                 GestionRecettes.AffichageRecettes();
-                Console.Write("\n\nQuelle est l'ID de la recette a associer à ce lot ? : ");
+                Console.Write("Quelle est l'ID de la recette a associer à ce lot ? : ");
                 IDRecette = int.Parse(Console.ReadLine());
                 Program.AffichageStatut();
                 Console.Write("\n\nQuelle est l'ID du statut a associer à ce lot ? : ");
@@ -157,19 +151,23 @@ namespace M2_Gestion_Flexible_Chariot
                 using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                 {
                     cmd.CommandText = "SELECT * FROM lot";
+                    Console.Write("\nID\t");
+                    Console.Write("Quantité de lots réalisées\t\t".PadLeft(6));
+                    Console.Write(" Quantité de lots à produire".PadLeft(12));
+                    Console.Write(" Date de création".PadLeft(12));
+                    Console.Write(" L'ID de la recette".PadLeft(12));
+                    Console.Write(" Statut du lot".PadLeft(12));
 
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         int compteur = 0;
                         while (reader.Read())
                         {
-                            Console.WriteLine("\n{0} {1} {2} {3} {4} {5}", reader["LOT_ID"], reader["LOT_QtePieceRealisee"], reader["LOT_QtePieceAProduire"], reader["LOT_DateCreation"], reader["REC_ID"], reader["STA_ID"]);
+                            Console.WriteLine("\n{0}\t\t {1}\t {2}\t\t {3}\t\t {4}\t\t {5}", reader["LOT_ID"], reader["LOT_QtePieceRealisee"], reader["LOT_QtePieceAProduire"], reader["LOT_DateCreation"], reader["REC_ID"], reader["STA_ID"]);
                             compteur++;
                         }
 
                         Console.WriteLine("\n{0} lots affichés.\n", compteur);
-                        Console.Write("Veuillez appuyer sur une touche pour continuer... ");
-                        Console.ReadKey();
                     }
                 }
             }
@@ -193,7 +191,7 @@ namespace M2_Gestion_Flexible_Chariot
 
             do
             {
-                Console.Write("\n\nVeuillez saisir l'ID du lot à effacer : ");
+                Console.Write("Veuillez saisir l'ID du lot à effacer : ");
                 int id = int.Parse(Console.ReadLine());
 
                 try
@@ -224,5 +222,6 @@ namespace M2_Gestion_Flexible_Chariot
             Console.Write("Veuillez appuyer sur une touche pour continuer... ");
             Console.ReadKey();
         }
+
     }
 }

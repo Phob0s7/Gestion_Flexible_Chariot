@@ -23,8 +23,8 @@ namespace M2_Gestion_Flexible_Chariot
         static void Main(string[] args)
         {
             GestionBaseDeDonnée.ConnectToDB("gestion_flexible_chariot", "root", "");
-            MenuPrincipale.AffichageMenuPrincipale();
-            MenuPrincipale.ChoixMenuPrincipale();
+            GestionMenuPrincipale.AffichageMenuPrincipale();
+            GestionMenuPrincipale.ChoixMenuPrincipale();
             GestionBaseDeDonnée.DisconnectFromDB();
         }
 
@@ -72,8 +72,6 @@ namespace M2_Gestion_Flexible_Chariot
                         }
 
                         Console.WriteLine("\n{0} statuts affichés.\n", compteur);
-                        Console.Write("Veuillez appuyer sur une touche pour continuer... ");
-                        Console.ReadKey();
                     }
                 }
             }

@@ -23,8 +23,11 @@ namespace M2_Gestion_Flexible_Chariot
             Console.WriteLine("\n1. Création de recettes");
             Console.WriteLine("2. Affichage de recettes");
             Console.WriteLine("3. Effacement de recettes");
-            Console.WriteLine("4. Effacement de pas");
-            Console.WriteLine("\n5. Revenir au menu principale");
+            Console.WriteLine("4. Edition de recettes");
+            Console.WriteLine("--------------------------------------------------");
+            Console.WriteLine("5. Effacement de pas");
+            Console.WriteLine("6. Edition de pas");
+            Console.WriteLine("\n7. Revenir au menu principale");
             Console.WriteLine("__________________________________________________");
         }
 
@@ -47,6 +50,7 @@ namespace M2_Gestion_Flexible_Chariot
                     break;
                 case '2':
                     AffichageRecettes();
+                    GestionMenuPrincipale.EntrerSaisieUtilisateur();
                     AffichageMenuRecettes();
                     ChoixMenuRecettes();
                     break;
@@ -59,7 +63,12 @@ namespace M2_Gestion_Flexible_Chariot
                 case '4':
                     break;
                 case '5':
-                    MenuPrincipale.AffichageMenuPrincipale();
+                    GestionPas.EffacerPas();
+                    break;
+                case '6':
+                    break;
+                case '7':
+                    GestionMenuPrincipale.AffichageMenuPrincipale();
                     break;
                 default:
                     ErreurSaisieMenuRecette();
@@ -88,6 +97,7 @@ namespace M2_Gestion_Flexible_Chariot
             char choixAjouterRecette = ' ';
             int nombreRecette = 1;
             int nbreAjout = 0;
+            string IDRecette = "";
 
             do
             {
@@ -106,16 +116,23 @@ namespace M2_Gestion_Flexible_Chariot
 
                         cmd.Parameters.AddWithValue("@nomRecette", nomRecette);
                         cmd.Parameters.AddWithValue("@dateCréation", dateTime);
-
-                        GestionPas.CréationPas();
-
-                        Console.Write("\nVoulez-vouz ajouter une autre recette (O/N) ? : ");
-
-                        choixAjouterRecette = char.Parse(Console.ReadLine().ToUpper());
-                        Console.Write("\n");
                         nbreAjout += cmd.ExecuteNonQuery();
                         nombreRecette++;
                     }
+
+                    using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                    {
+                        cmd.CommandText = "SELECT MAX(REC_ID) FROM RECETTE";
+
+                        IDRecette = cmd.ExecuteScalar().ToString();
+                    }
+
+                    GestionPas.CréationPas(ref IDRecette);
+
+                    Console.Write("\nVoulez-vouz ajouter une autre recette (O/N) ? : ");
+
+                    choixAjouterRecette = char.Parse(Console.ReadLine().ToUpper());
+                    Console.Write("\n");
 
                 }
                 catch (MySqlException ex)
@@ -144,19 +161,19 @@ namespace M2_Gestion_Flexible_Chariot
                 using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                 {
                     cmd.CommandText = "SELECT * FROM recette ";
-                    Console.WriteLine("\n\nRecette à associer au pas : ");
-
-
+                    Console.Write("\nID\t");
+                    Console.Write("Nom\t\t".PadLeft(6));
+                    Console.Write(" Date de création\n".PadLeft(12));
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         int compteur = 0;
                         while (reader.Read())
                         {
-                            Console.WriteLine("\n{0} {1} {2}", reader["REC_ID"], reader["REC_Nom"], reader["REC_DateCreation"]);
+                            Console.WriteLine("\n{0}\t {1}\t\t {2}".PadLeft(10), reader["REC_ID"], reader["REC_Nom"], reader["REC_DateCreation"]);
                             compteur++;
                         }
 
-                        Console.WriteLine("\n{0} recettes affichés.\n", compteur);
+                        Console.WriteLine("\n{0} recettes affichées.\n", compteur);
                     }
                 }
             }
@@ -164,12 +181,8 @@ namespace M2_Gestion_Flexible_Chariot
             {
                 Console.Write("\nAttention il y a eu le problème suivant : ");
                 Console.Write(ex.Message);
-                Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
-                Console.ReadKey();
                 Console.Write("\n\n");
             }
-            Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
-            Console.ReadKey();
         }
 
         /// <summary>
@@ -182,7 +195,7 @@ namespace M2_Gestion_Flexible_Chariot
 
             do
             {
-                Console.Write("\n\nVeuillez saisir l'ID de la recette à effacer : ");
+                Console.Write("Veuillez saisir l'ID de la recette à effacer : ");
                 int id = int.Parse(Console.ReadLine());
 
                 try

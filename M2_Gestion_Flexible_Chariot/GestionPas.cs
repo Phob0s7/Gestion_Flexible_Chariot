@@ -12,7 +12,7 @@ namespace M2_Gestion_Flexible_Chariot
         /// <summary>
         /// Permet de créer un pas.
         /// </summary>
-       public static void CréationPas()
+       public static void CréationPas(ref string IDRecette)
         {
             int nbreAjout = 0;
             char choixCréationPas = ' ';
@@ -22,7 +22,7 @@ namespace M2_Gestion_Flexible_Chariot
             int positionPas = 0;
             int tempsPas = 0;
             bool quittancePas = false;
-            int IDRecette = 0;
+            string IDRecettes = "";
 
             do
             {
@@ -31,8 +31,8 @@ namespace M2_Gestion_Flexible_Chariot
                 positionPas = SaisiePositionPas();
                 tempsPas = SaisieDuréePas();
                 quittancePas = SaisieQuittancePas();
-                GestionRecettes.AffichageRecettes();
-                IDRecette = SaisieIDRecette();
+                Console.WriteLine("\nRecette à associer :\n");
+                IDRecettes = SaisieIDRecette(ref IDRecette);
 
                 try
                 {
@@ -77,11 +77,19 @@ namespace M2_Gestion_Flexible_Chariot
                     Console.Write("\n\n");
                 }
 
-            } while (choixCréationPas != 'N');
+                if (nombrePas == 10)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Vous ne pouvez plus créer de pas supplémentaire");
+                    Console.ResetColor();
+                }
+
+            } while (choixCréationPas != 'N' && nombrePas < 10);
 
             Console.WriteLine("Nombre de pas ajoutés : {0}\n", nbreAjout);
             Console.Write("Veuillez appuyer sur une touche pour continuer... ");
             Console.ReadKey();
+            Console.WriteLine("\n");
         }
 
         /// <summary>
@@ -253,27 +261,57 @@ namespace M2_Gestion_Flexible_Chariot
         /// Permet de saisir l'ID de la recette à associer.
         /// </summary>
         /// <returns></returns>
-        public static int SaisieIDRecette()
+        public static string SaisieIDRecette(ref string IDRecette)
         {
-            int IDRecette = 0;
             string saisieUtilisateur = "";
             bool saisieValide = false;
+            int résultat = 0;
+
+            try
+            {
+                using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                {
+                    cmd.CommandText = "SELECT REC_ID FROM recette";
+                    Console.Write("ID\t");
+                    Console.Write("Nom\t\t".PadLeft(6));
+                    Console.Write(" Date de création\n".PadLeft(12));
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        int compteur = 0;
+                        while (reader.Read())
+                        {
+                            //Console.WriteLine("\n{0}\t {1}\t\t {2}".PadLeft(10), reader["REC_ID"], reader["REC_Nom"], reader["REC_DateCreation"]);
+                            Console.WriteLine("{0}", reader["REC_ID"]);
+                            compteur++;
+                        }
+
+                        Console.WriteLine(("\n{0} recettes affichées.\n", compteur));
+                    }
+                }
+            }
+            catch (MySqlException ex)
+            {
+                Console.Write("\nAttention il y a eu le problème suivant : ");
+                Console.Write(ex.Message);
+                GestionMenuPrincipale.EntrerSaisieUtilisateur();
+                Console.Write("\n\n");
+            }
 
             do
             {
-                Console.Write("\n\nQuelle est la recette qu'il faut associer pour le pas ? : ");
+                Console.Write("\n\nEntrer le n° de l'ID de la recette : ");
                 saisieUtilisateur = Console.ReadLine();
 
-                if (!int.TryParse(saisieUtilisateur, out IDRecette))
+                if (saisieUtilisateur != IDRecette || !int.TryParse(saisieUtilisateur, out résultat))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("\nVeuillez saisir une valeur de mimimum 0.\n");
+                    Console.Write("\nVeuillez saisir l'ID correcte de la recette à insérer.");
                     Console.ResetColor();
                 }
 
                 else
                 {
-                    IDRecette = int.Parse(saisieUtilisateur);
+                    IDRecette = saisieUtilisateur;
                     saisieValide = true;
                 }
 

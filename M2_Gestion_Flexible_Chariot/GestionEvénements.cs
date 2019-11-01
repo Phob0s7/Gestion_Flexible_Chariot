@@ -9,6 +9,7 @@ namespace M2_Gestion_Flexible_Chariot
 {
     public class GestionEvénements
     {
+        /*
         /// <summary>
         /// Permet d'afficher le menu événements.
         /// </summary>
@@ -36,7 +37,6 @@ namespace M2_Gestion_Flexible_Chariot
             switch (choixMenuEvénements)
             {
                 case '1':
-                    AffichageEvénements();
                     AffichageMenuEvénements();
                     ChoixMenuEvénements();
                     break;
@@ -58,20 +58,35 @@ namespace M2_Gestion_Flexible_Chariot
             Console.Write("\nErreur de saisie, veuillez appuyer sur une touche pour recommencer la saisie... ");
             Console.WriteLine(Console.ReadKey());
             Console.Clear();
-            AffichageEvénements();
+            AffichageMenuEvénements();
             ChoixMenuEvénements();
         }
+        */
 
         /// <summary>
         /// Permet d'afficher la liste des événements.
         /// </summary>
-        public static void AffichageEvénements()
+        /// 
+
+        /// <summary>
+        /// Affiche l'historique d'un lot choisi.
+        /// </summary>
+
+        public static void AfficherHistoriqueLot()
         {
+            Console.Write("Veuillez saisir l'ID du lot pour afficher les événements : ");
+            string IDHistoriqueLot = Console.ReadLine();
+            Console.WriteLine("\n");
+
             try
             {
                 using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                 {
-                    cmd.CommandText = "SELECT * FROM evenement";
+                    cmd.CommandText = $"SELECT * FROM evenement WHERE LOT_ID = {IDHistoriqueLot} ";
+                    Console.Write("ID\t");
+                    Console.Write("Libellé\t");
+                    Console.Write("Date de création\t");
+                    Console.Write("l'ID du lot\t");
 
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -90,8 +105,7 @@ namespace M2_Gestion_Flexible_Chariot
             {
                 Console.Write("\nAttention il y a eu le problème suivant : ");
                 Console.Write(ex.Message);
-                Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
-                Console.ReadKey();
+                GestionMenuPrincipale.EntrerSaisieUtilisateur();
                 Console.Write("\n\n");
             }
             Console.Write("\nVeuillez appuyer sur une touche pour continuer...");

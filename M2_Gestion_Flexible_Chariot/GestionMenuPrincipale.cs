@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace M2_Gestion_Flexible_Chariot
 {
-    public class MenuPrincipale
+    public class GestionMenuPrincipale
     {
         /// <summary>
         /// Permet d'afficher le menu principale.
@@ -19,7 +19,7 @@ namespace M2_Gestion_Flexible_Chariot
             Console.WriteLine("__________________________________________________");
             Console.WriteLine("\n1. Gestion de recettes");
             Console.WriteLine("2. Gestion de lots");
-            Console.WriteLine("3. Gestion des événements\n");
+            Console.WriteLine("3. Historique de lots\n");
             Console.WriteLine("4. Quitter le programme");
             Console.WriteLine("__________________________________________________");
         }
@@ -27,7 +27,7 @@ namespace M2_Gestion_Flexible_Chariot
         /// <summary>
         /// Permet de saisir le choix de l'utilisateur en fonction du menu principale.
         /// </summary>
-       public static void ChoixMenuPrincipale()
+        public static void ChoixMenuPrincipale()
         {
             string choixMenuPrincipale = "";
             do
@@ -48,8 +48,9 @@ namespace M2_Gestion_Flexible_Chariot
                         break;
 
                     case "3":
-                        GestionEvénements.AffichageMenuEvénements();
-                        GestionEvénements.ChoixMenuEvénements();
+                        GestionLots.AffichageLots();
+                        GestionEvénements.AfficherHistoriqueLot();
+                        AffichageMenuPrincipale();
                         break;
 
                     case "4":
@@ -76,6 +77,15 @@ namespace M2_Gestion_Flexible_Chariot
             Console.Clear();
             AffichageMenuPrincipale();
             ChoixMenuPrincipale();
+        }
+
+        /// <summary>
+        /// Attend la saisi d'une touche auprès de l'utlisateur.
+        /// </summary>
+        public static void EntrerSaisieUtilisateur()
+        {
+            Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
+            Console.ReadKey();
         }
     }
 }

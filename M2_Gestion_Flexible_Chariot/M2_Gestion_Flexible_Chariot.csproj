@@ -49,7 +49,7 @@
     <Compile Include="GestionLots.cs" />
     <Compile Include="GestionPas.cs" />
     <Compile Include="GestionRecettes.cs" />
-    <Compile Include="MenuPrincipale.cs" />
+    <Compile Include="GestionMenuPrincipale.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
