@@ -31,8 +31,8 @@ namespace M2_Gestion_Flexible_Chariot
                 positionPas = SaisiePositionPas();
                 tempsPas = SaisieDuréePas();
                 quittancePas = SaisieQuittancePas();
-                Console.WriteLine("\nRecette à associer :\n");
-                IDRecettes = SaisieIDRecette(ref IDRecette);
+                //Console.WriteLine("\nRecette à associer :\n");
+                //IDRecettes = SaisieIDRecette(ref IDRecette);
 
                 try
                 {

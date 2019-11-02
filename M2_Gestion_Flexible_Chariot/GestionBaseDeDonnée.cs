@@ -21,6 +21,7 @@ namespace M2_Gestion_Flexible_Chariot
         static public void ConnectToDB(string databaseName,string userName,string password)
         {
             string connectionString = $"server=localhost;database={databaseName};Uid={userName};Pwd={password};";
+            //string connectionString = $"server=172.16.100.9;database={databaseName};Uid={userName};Pwd={password};";
 
             connexion = new MySqlConnection(connectionString);
 

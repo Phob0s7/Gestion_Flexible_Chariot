@@ -19,6 +19,7 @@ namespace M2_Gestion_Flexible_Chariot
         static void Main(string[] args)
         {
             GestionBaseDeDonnée.ConnectToDB("gestion_flexible_chariot", "root", "");
+            //GestionBaseDeDonnée.ConnectToDB("villsyl_bourrob_gestion_flexible_chariot", "villsyl", "EST2019");
             GestionMenuPrincipale.AffichageMenuPrincipale();
             GestionMenuPrincipale.ChoixMenuPrincipale();
             GestionBaseDeDonnée.DisconnectFromDB();
