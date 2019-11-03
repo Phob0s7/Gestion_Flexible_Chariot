@@ -19,8 +19,8 @@ namespace M2_Gestion_Flexible_Chariot
             Console.WriteLine("\t        *** Menu lots ***                       ");
             Console.WriteLine("__________________________________________________");
             Console.WriteLine("\n1. Création de lots");
-            Console.WriteLine("2. Effacement de lots");
-            Console.WriteLine("3. Edition de lots");
+            Console.WriteLine("2. Edition de lots");
+            Console.WriteLine("3. Effacement de lots");
             Console.WriteLine("\n4. Revenir au menu principale");
             Console.WriteLine("__________________________________________________");
         }
@@ -30,49 +30,42 @@ namespace M2_Gestion_Flexible_Chariot
         /// </summary>
         public static void ChoixMenuLots()
         {
-            char choixMenuLots = ' ';
+            string choixMenuLots = "";
+            bool saisieInvalide = false;
 
-            Console.Write("Votre choix : ");
-            choixMenuLots = char.Parse(Console.ReadLine());
-
-            switch (choixMenuLots)
+            do
             {
-                case '1':
-                    CréationLots();
-                    AffichageMenuLots();
-                    ChoixMenuLots();
-                    break;
-                case '2':
-                    AffichageLots();
-                    EffacerLots();
-                    AffichageMenuLots();
-                    ChoixMenuLots();
-                    break;
-                case '3':
-                    break;
-                case '4':
-                    GestionMenuPrincipale.AffichageMenuPrincipale();
-                    break;
-                default:
-                    ErreurSaisieMenuLots();
-                    break;
-            }
+                saisieInvalide = false;
 
+                Console.Write("Votre choix : ");
+                choixMenuLots = Console.ReadLine();
+
+                switch (choixMenuLots)
+                {
+                    case "1":
+                        CréationLots();
+                        AffichageMenuLots();
+                        ChoixMenuLots();
+                        break;
+                    case "2":
+
+                        break;
+                    case "3":
+                        AffichageLots();
+                        EffacerLots();
+                        AffichageMenuLots();
+                        ChoixMenuLots();
+                        break;
+                    case "4":
+                        GestionMenuPrincipale.AffichageMenuPrincipale();
+                        break;
+                    default:
+                        saisieInvalide = true;
+                        GestionMenuPrincipale.ErreurSaisieMenu();
+                        break;
+                }
+            } while (saisieInvalide == true);
         }
-
-        /// <summary>
-        /// Permet d'écrire quelque chose par défaut lors d'une erreur.
-        /// </summary>
-        public static void ErreurSaisieMenuLots()
-        {
-            Console.Write("\nErreur de saisie, veuillez appuyer sur une touche pour recommencer la saisie... ");
-            Console.WriteLine(Console.ReadKey());
-            Console.Clear();
-            AffichageMenuLots();
-            ChoixMenuLots();
-        }
-
-
 
         /// <summary>
         /// Permet de créer un lot.

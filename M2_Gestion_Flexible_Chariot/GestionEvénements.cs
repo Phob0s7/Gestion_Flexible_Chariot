@@ -74,44 +74,71 @@ namespace M2_Gestion_Flexible_Chariot
 
         public static void AfficherHistoriqueLot()
         {
-            Console.Write("Veuillez saisir l'ID du lot pour afficher les événements : ");
-            string IDHistoriqueLot = Console.ReadLine();
-            Console.Write("\n");
+            string IDHistoriqueLot = "";
+            List<string> listeLots = new List<string>();
 
-            try
+            do
             {
-                using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+
+                Console.Write("Veuillez saisir l'ID du lot pour afficher les événements : ");
+                IDHistoriqueLot = Console.ReadLine();
+                Console.Write("\n");
+
+                try
                 {
-                    cmd.CommandText = $"SELECT EVE_Libelle, EVE_Date, LOT_ID FROM evenement WHERE LOT_ID = {IDHistoriqueLot} ";
-                    string colonnes = "Libellé {0,-15} Date de création {0,-15} ID du lot\n";
-                    Console.Write(string.Format(colonnes, "", "", ""));
-
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                     {
-                        int compteur = 0;
-                        Console.Write("\n");
-                        while (reader.Read())
-                        {
-                            Console.Write(string.Format("{0,-24}", reader["EVE_Libelle"]));
-                            Console.Write(string.Format("{0,-33}", reader["EVE_Date"]));
-                            Console.Write(string.Format("{0,0}", reader["LOT_ID"]));
+                        cmd.CommandText = "SELECT LOT_ID FROM lot ";
 
-                            compteur++;
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                listeLots.Add(reader.GetString(reader.GetOrdinal("LOT_ID")));
+                            }
                         }
-                        Console.Write("\n");
-                        Console.WriteLine("\n{0} événements affichés.", compteur);
+
+                        if (listeLots.Contains(IDHistoriqueLot))
+                        {
+
+                            cmd.CommandText = $"SELECT EVE_Libelle, EVE_Date, LOT_ID FROM evenement WHERE LOT_ID = {IDHistoriqueLot} ";
+                            string colonnes = "Libellé {0,-15} Date de création {0,-15} ID du lot\n";
+                            Console.Write(string.Format(colonnes, "", "", ""));
+
+                            using (MySqlDataReader reader = cmd.ExecuteReader())
+                            {
+                                int compteur = 0;
+                                Console.Write("\n");
+                                while (reader.Read())
+                                {
+                                    Console.Write(string.Format("{0,-24}", reader["EVE_Libelle"]));
+                                    Console.Write(string.Format("{0,-33}", reader["EVE_Date"]));
+                                    Console.Write(string.Format("{0,0}", reader["LOT_ID"]));
+
+                                    compteur++;
+                                }
+                                Console.Write("\n");
+                                Console.WriteLine("\n{0} événement(s) affiché(s).", compteur);
+                                GestionMenuPrincipale.EntrerSaisieUtilisateur();
+                            }
+                        }
+
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("L'ID du lot n'existe pas, veuillez réessayer.\n");
+                            Console.ResetColor();
+                        }
                     }
                 }
-            }
-            catch (MySqlException ex)
-            {
-                Console.Write("\nAttention il y a eu le problème suivant : ");
-                Console.Write(ex.Message);
-                GestionMenuPrincipale.EntrerSaisieUtilisateur();
-                Console.Write("\n\n");
-            }
-
-            GestionMenuPrincipale.EntrerSaisieUtilisateur();
+                catch (MySqlException ex)
+                {
+                    Console.Write("\nAttention il y a eu le problème suivant : ");
+                    Console.Write(ex.Message);
+                    GestionMenuPrincipale.EntrerSaisieUtilisateur();
+                    Console.Write("\n\n");
+                }
+            } while (!listeLots.Contains(IDHistoriqueLot));
         }
     }
 }

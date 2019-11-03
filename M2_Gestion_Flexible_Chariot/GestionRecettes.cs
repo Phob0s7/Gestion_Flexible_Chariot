@@ -18,18 +18,18 @@ namespace M2_Gestion_Flexible_Chariot
         {
             Console.Clear();
             Console.WriteLine("__________________________________________________");
-            Console.WriteLine("\t      *** recettes ***                          ");
+            Console.WriteLine("\t      *** Recettes ***                          ");
             Console.WriteLine("__________________________________________________");
             Console.WriteLine("\n1. Création de recettes");
             Console.WriteLine("2. Affichage de recettes");
-            Console.WriteLine("3. Effacement de recettes");
-            Console.WriteLine("4. Edition de recettes");
+            Console.WriteLine("3. Edition de recettes");
+            Console.WriteLine("4. Effacement de recettes");
             Console.WriteLine("__________________________________________________");
             Console.WriteLine("\t        *** Pas ***                             ");
             Console.WriteLine("__________________________________________________");
             Console.WriteLine("\n5. Afficher tous les pas d'une recette");
-            Console.WriteLine("6. Effacement de pas");
-            Console.WriteLine("7. Edition de pas");
+            Console.WriteLine("6. Edition de pas");
+            Console.WriteLine("7. Effacement de pas");
             Console.WriteLine("\n8. Revenir au menu principale");
             Console.WriteLine("__________________________________________________");
         }
@@ -39,69 +39,66 @@ namespace M2_Gestion_Flexible_Chariot
         /// </summary>
         public static void ChoixMenuRecettes()
         {
-            char choixMenuRecettes = ' ';
+            string choixMenuRecettes = "";
             string IDPas = "";
             string IDRecette = "";
+            bool saisieInvalide = false;
 
-            Console.Write("Votre choix : ");
-            choixMenuRecettes = char.Parse(Console.ReadLine());
-
-            switch (choixMenuRecettes)
+            do
             {
-                case '1':
-                    CréationRecettes();
-                    AffichageMenuRecettes();
-                    ChoixMenuRecettes();
-                    break;
-                case '2':
-                    AffichageRecettes();
-                    GestionMenuPrincipale.EntrerSaisieUtilisateur();
-                    AffichageMenuRecettes();
-                    ChoixMenuRecettes();
-                    break;
-                case '3':
-                    AffichageRecettes();
-                    EffacerRecettes();
-                    AffichageMenuRecettes();
-                    ChoixMenuRecettes();
-                    break;
-                case '4':
-                    break;
-                case '5':
-                    GestionRecettes.AffichageRecettes();
-                    IDRecette = SaisirIDRecette();
-                    GestionPas.AfficherPas(IDRecette);
-                    AffichageMenuRecettes();
-                    break;
-                case '6':
-                    GestionPas.EffacerPas();
-                    break;
+                saisieInvalide = false;
 
-                case '7':
-                    //GestionPas.AfficherPas();
-                    IDPas = GestionPas.ChoisirPasAModifier();
-                    GestionPas.ModifierPas(IDPas);
-                    break;
+                Console.Write("Votre choix : ");
+                choixMenuRecettes = Console.ReadLine();
 
-                case '8':
-                    GestionMenuPrincipale.AffichageMenuPrincipale();
-                    break;
-                default:
-                    ErreurSaisieMenuRecette();
-                    break;
-            }
-        }
+                switch (choixMenuRecettes)
+                {
+                    case "1":
+                        CréationRecettes();
+                        AffichageMenuRecettes();
+                        ChoixMenuRecettes();
+                        break;
+                    case "2":
+                        AffichageRecettes();
+                        GestionMenuPrincipale.EntrerSaisieUtilisateur();
+                        AffichageMenuRecettes();
+                        ChoixMenuRecettes();
+                        break;
+                    case "3":
 
-        /// <summary>
-        /// Permet d'écrire quelque chose par défaut lors d'une erreur.
-        /// </summary>
-        public static void ErreurSaisieMenuRecette()
-        {
-            Console.Write("\nErreur de saisie, veuillez appuyer sur une touche pour recommencer la saisie... ");
-            Console.WriteLine(Console.ReadKey());
-            Console.Clear();
-            AffichageMenuRecettes();
-            ChoixMenuRecettes();
+                        break;
+                    case "4":
+                        AffichageRecettes();
+                        EffacerRecettes();
+                        AffichageMenuRecettes();
+                        ChoixMenuRecettes();
+                        break;
+                    case "5":
+                        GestionRecettes.AffichageRecettes();
+                        IDRecette = SaisirIDRecette();
+                        GestionPas.AfficherPas(IDRecette);
+                        AffichageMenuRecettes();
+                        ChoixMenuRecettes();
+                        break;
+                    case "6":
+                        //GestionPas.AfficherPas();
+                        IDPas = GestionPas.ChoisirPasAModifier();
+                        GestionPas.ModifierPas(IDPas);
+                        break;
+
+                    case "7":
+                        GestionPas.EffacerPas();
+                        break;
+
+                    case "8":
+                        GestionMenuPrincipale.AffichageMenuPrincipale();
+                        break;
+                    default:
+                        saisieInvalide = true;
+                        GestionMenuPrincipale.ErreurSaisieMenu();
+                        break;
+                }
+            } while (saisieInvalide);
         }
 
         /// <summary>
@@ -145,11 +142,9 @@ namespace M2_Gestion_Flexible_Chariot
 
                     GestionPas.CréationPas(ref IDRecette);
 
-                    Console.Write("\nVoulez-vouz ajouter une autre recette (O/N) ? : ");
+                    Console.Write("Voulez-vouz ajouter une autre recette (O/N) ? : ");
 
                     choixAjouterRecette = char.Parse(Console.ReadLine().ToUpper());
-                    Console.Write("\n");
-
                 }
                 catch (MySqlException ex)
                 {
@@ -162,7 +157,7 @@ namespace M2_Gestion_Flexible_Chariot
 
             } while (choixAjouterRecette != 'N');
 
-            Console.WriteLine("Nombre de recette ajoutés : {0}\n", nbreAjout);
+            Console.WriteLine("\nNombre de recette ajoutés : {0}", nbreAjout);
             Console.Write("\nVeuillez appuyer sur une touche pour continuer... ");
             Console.ReadKey();
         }

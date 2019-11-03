@@ -58,7 +58,7 @@ namespace M2_Gestion_Flexible_Chariot
                         break;
 
                     default:
-                        ErreurSaisieMenuPrincipale();
+                        ErreurSaisieMenu();
                         break;
                 }
             } while (choixMenuPrincipale != "4");
@@ -67,16 +67,11 @@ namespace M2_Gestion_Flexible_Chariot
         /// <summary>
         /// Permet d'écrire quelque chose par défaut lors d'une erreur.
         /// </summary>
-        public static void ErreurSaisieMenuPrincipale()
+        public static void ErreurSaisieMenu()
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write("\nVous n'avez pas saisi un caractère correcte.\n");
+            Console.WriteLine("\nVous n'avez pas saisi un choix correcte.\n");
             Console.ResetColor();
-            Console.Write("\nVeuillez réessayer en appuyant sur une touche...");
-            Console.ReadKey();
-            Console.Clear();
-            AffichageMenuPrincipale();
-            ChoixMenuPrincipale();
         }
 
         /// <summary>

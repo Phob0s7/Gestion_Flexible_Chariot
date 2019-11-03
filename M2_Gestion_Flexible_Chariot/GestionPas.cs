@@ -375,7 +375,7 @@ namespace M2_Gestion_Flexible_Chariot
                             compteur++;
                         }
 
-                        Console.WriteLine("\n{0} pas affichées.", compteur);
+                        Console.WriteLine("\n{0} pas affiché(s).", compteur);
                     }
                 }
             }
