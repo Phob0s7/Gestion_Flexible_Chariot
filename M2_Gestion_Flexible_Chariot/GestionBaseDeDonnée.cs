@@ -8,7 +8,7 @@ using MySql.Data.MySqlClient;
 
 namespace M2_Gestion_Flexible_Chariot
 {
-   static class GestionBaseDeDonnée
+    static class GestionBaseDeDonnée
     {
         static public MySqlConnection connexion;
 
@@ -18,7 +18,7 @@ namespace M2_Gestion_Flexible_Chariot
         /// <param name="databaseName">Nom de la base de données</param>
         /// <param name="userName">Nom d'utilisateur</param>
         /// <param name="password">Mot de passe</param>
-        static public void ConnectToDB(string databaseName,string userName,string password)
+        static public void ConnectToDB(string databaseName, string userName, string password)
         {
             string connectionString = $"server=localhost;database={databaseName};Uid={userName};Pwd={password};";
             //string connectionString = $"server=172.16.100.9;database={databaseName};Uid={userName};Pwd={password};";

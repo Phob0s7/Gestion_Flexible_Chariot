@@ -9,69 +9,9 @@ namespace M2_Gestion_Flexible_Chariot
 {
     public class GestionEvénements
     {
-        /*
         /// <summary>
-        /// Permet d'afficher le menu événements.
+        /// Affiche les événements en fonction du lot saisi.
         /// </summary>
-        public static void AffichageMenuEvénements()
-        {
-            Console.Clear();
-            Console.WriteLine("__________________________________________________");
-            Console.WriteLine("\t      *** Menu événements ***                     ");
-            Console.WriteLine("__________________________________________________");
-            Console.WriteLine("1. Affichage des événements");
-            Console.WriteLine("\n2. Revenir au menu principale");
-            Console.WriteLine("__________________________________________________");
-        }
-
-        /// <summary>
-        /// Permet de saisir le choix de l'utilisateur en fonction du menu recettes.
-        /// </summary>
-        public static void ChoixMenuEvénements()
-        {
-            char choixMenuEvénements = ' ';
-
-            Console.Write("Votre choix : ");
-            choixMenuEvénements = char.Parse(Console.ReadLine());
-
-            switch (choixMenuEvénements)
-            {
-                case '1':
-                    AffichageMenuEvénements();
-                    ChoixMenuEvénements();
-                    break;
-                case '2':
-                    MenuPrincipale.AffichageMenuPrincipale();
-                    break;
-                default:
-                    ErreurSaisieMenuEvénements();
-                    break;
-            }
-
-        }
-
-        /// <summary>
-        /// Permet d'écrire quelque chose par défaut lors d'une erreur.
-        /// </summary>
-        public static void ErreurSaisieMenuEvénements()
-        {
-            Console.Write("\nErreur de saisie, veuillez appuyer sur une touche pour recommencer la saisie... ");
-            Console.WriteLine(Console.ReadKey());
-            Console.Clear();
-            AffichageMenuEvénements();
-            ChoixMenuEvénements();
-        }
-        */
-
-        /// <summary>
-        /// Permet d'afficher la liste des événements.
-        /// </summary>
-        /// 
-
-        /// <summary>
-        /// Affiche l'historique d'un lot choisi.
-        /// </summary>
-
         public static void AfficherHistoriqueLot()
         {
             string IDHistoriqueLot = "";
@@ -79,8 +19,7 @@ namespace M2_Gestion_Flexible_Chariot
 
             do
             {
-
-                Console.Write("Veuillez saisir l'ID du lot pour afficher les événements : ");
+                Console.Write("\n\nVeuillez saisir l'ID du lot pour afficher ses événements : ");
                 IDHistoriqueLot = Console.ReadLine();
                 Console.Write("\n");
 
@@ -100,7 +39,6 @@ namespace M2_Gestion_Flexible_Chariot
 
                         if (listeLots.Contains(IDHistoriqueLot))
                         {
-
                             cmd.CommandText = $"SELECT EVE_Libelle, EVE_Date, LOT_ID FROM evenement WHERE LOT_ID = {IDHistoriqueLot} ";
                             string colonnes = "Libellé {0,-15} Date de création {0,-15} ID du lot\n";
                             Console.Write(string.Format(colonnes, "", "", ""));
@@ -114,11 +52,12 @@ namespace M2_Gestion_Flexible_Chariot
                                     Console.Write(string.Format("{0,-24}", reader["EVE_Libelle"]));
                                     Console.Write(string.Format("{0,-33}", reader["EVE_Date"]));
                                     Console.Write(string.Format("{0,0}", reader["LOT_ID"]));
+                                    Console.WriteLine("");
 
                                     compteur++;
                                 }
                                 Console.Write("\n");
-                                Console.WriteLine("\n{0} événement(s) affiché(s).", compteur);
+                                Console.WriteLine("{0} événement(s) affiché(s).", compteur);
                                 GestionMenuPrincipale.EntrerSaisieUtilisateur();
                             }
                         }
@@ -126,7 +65,7 @@ namespace M2_Gestion_Flexible_Chariot
                         else
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("L'ID du lot n'existe pas, veuillez réessayer.\n");
+                            Console.Write("L'ID du lot n'existe pas, veuillez réessayer.");
                             Console.ResetColor();
                         }
                     }

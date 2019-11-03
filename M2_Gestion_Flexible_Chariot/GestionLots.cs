@@ -19,9 +19,10 @@ namespace M2_Gestion_Flexible_Chariot
             Console.WriteLine("\t        *** Menu lots ***                       ");
             Console.WriteLine("__________________________________________________");
             Console.WriteLine("\n1. Création de lots");
-            Console.WriteLine("2. Edition de lots");
-            Console.WriteLine("3. Effacement de lots");
-            Console.WriteLine("\n4. Revenir au menu principale");
+            Console.WriteLine("2. Affichage de lots");
+            //Console.WriteLine("3. Edition de lots");
+            //Console.WriteLine("4. Effacement de lots");
+            Console.WriteLine("\n3. Revenir au menu principale");
             Console.WriteLine("__________________________________________________");
         }
 
@@ -48,15 +49,22 @@ namespace M2_Gestion_Flexible_Chariot
                         ChoixMenuLots();
                         break;
                     case "2":
-
-                        break;
-                    case "3":
                         AffichageLots();
-                        EffacerLots();
                         AffichageMenuLots();
                         ChoixMenuLots();
                         break;
-                    case "4":
+                    /*
+                case "3":
+
+                    break;
+                case "4":
+                    AffichageLots();
+                    EffacerLots();
+                    AffichageMenuLots();
+                    ChoixMenuLots();
+                    break;
+                    */
+                    case "3":
                         GestionMenuPrincipale.AffichageMenuPrincipale();
                         break;
                     default:
@@ -81,7 +89,6 @@ namespace M2_Gestion_Flexible_Chariot
             char choixCréationLots = ' ';
             List<string> listeIDRecette = new List<string>();
 
-
             DateTime dateTime = DateTime.Now;
 
             do
@@ -100,15 +107,7 @@ namespace M2_Gestion_Flexible_Chariot
                     {
                         using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                         {
-                            cmd.CommandText = "SELECT REC_ID FROM recette ";
-
-                            using (MySqlDataReader reader = cmd.ExecuteReader())
-                            {
-                                while (reader.Read())
-                                {
-                                    listeIDRecette.Add(reader.GetString(reader.GetOrdinal("REC_ID")));
-                                }
-                            }
+                            listeIDRecette = GestionRecettes.StockerIDRecette();
 
                             if (listeIDRecette.Contains(IDRecette))
                             {
@@ -188,15 +187,10 @@ namespace M2_Gestion_Flexible_Chariot
         /// </summary>
         public static string SaisirIDRecette()
         {
-            string saisieUtilisateur = "";
-            bool saisieValide = false;
             string IDRecette = "";
 
-
-            Console.Write("\nQuelle est l'ID de la recette a associer à ce lot ? : ");
+            Console.Write("\nQuel est l'ID de la recette à associer à ce lot ? : ");
             IDRecette = Console.ReadLine();
-
-
 
             return IDRecette;
         }
@@ -205,8 +199,6 @@ namespace M2_Gestion_Flexible_Chariot
         /// </summary>
         public static void AffichageLots()
         {
-            Console.Clear();
-
             try
             {
                 using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
@@ -231,7 +223,8 @@ namespace M2_Gestion_Flexible_Chariot
                             compteur++;
                         }
 
-                        Console.WriteLine("\n{0} lots affichés.\n", compteur);
+                        Console.Write("\n{0} lots affiché(s).\n", compteur);
+                        GestionMenuPrincipale.EntrerSaisieUtilisateur();
                     }
                 }
             }
@@ -286,6 +279,5 @@ namespace M2_Gestion_Flexible_Chariot
             Console.Write("Veuillez appuyer sur une touche pour continuer... ");
             Console.ReadKey();
         }
-
     }
 }

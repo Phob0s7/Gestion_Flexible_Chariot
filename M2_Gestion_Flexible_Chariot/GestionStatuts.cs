@@ -32,7 +32,6 @@ namespace M2_Gestion_Flexible_Chariot
                 Console.ReadKey();
                 Console.Write("\n\n");
             }
-
             return IDStatut;
         }
     }

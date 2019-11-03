@@ -28,7 +28,7 @@ namespace M2_Gestion_Flexible_Chariot
                 Console.WriteLine("\n\n\t      Pas n° " + nombrePas + "\n");
 
                 numéroPas = SaisieNuméroPas();
-                nomPas = SaisieNomPas();
+                nomPas = VérifierSaisieNom("Quel est le nom du pas ? : ");
                 positionPas = SaisiePositionPas();
                 tempsPas = SaisieDuréePas();
                 quittancePas = SaisieQuittancePas();
@@ -151,10 +151,10 @@ namespace M2_Gestion_Flexible_Chariot
             return numéroPas;
         }
         /// <summary>
-        /// Permet de saisir le nom du pas.
+        /// Vérifie la saisie si elle contient des lettres.
         /// </summary>
         /// <returns></returns>
-        public static string SaisieNomPas()
+        public static string VérifierSaisieNom(string messageSaisie)
         {
             string saisiUtilisateur = "";
             float résultatConversionF = 0;
@@ -164,13 +164,13 @@ namespace M2_Gestion_Flexible_Chariot
 
             do
             {
-                Console.Write("Quel est le nom du pas ? : ");
+                Console.Write(messageSaisie);
                 saisiUtilisateur = Console.ReadLine();
 
                 if (int.TryParse(saisiUtilisateur, out résultatConversionI) || saisiUtilisateur == "" || float.TryParse(saisiUtilisateur, out résultatConversionF))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("\nVeuillez saisir une valeur correcte (lettre(s)).\n");
+                    Console.Write("Veuillez saisir une valeur correcte (lettre(s)).");
                     Console.ResetColor();
                 }
 
@@ -347,47 +347,67 @@ namespace M2_Gestion_Flexible_Chariot
         /// <summary>
         /// Affiche les pas existant.
         /// </summary>
-        public static void AfficherPas(string IDRecette)
+        public static void AfficherPas()
         {
-            try
-            {
-                using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
-                {
-                    cmd.CommandText = $"SELECT * FROM pas WHERE REC_ID = {IDRecette}";
-                    string colonnes = "\nID {0,-9} Numéro {0,-9} Nom {0,-9} Position {0,-9} Temps {0,-9} Quittance {0,-9} ID de la recette";
-                    Console.WriteLine(string.Format(colonnes, "", "", "", "", "", ""));
-                    Console.WriteLine("");
-                    
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        int compteur = 0;
-                        while (reader.Read())
-                        {
-                            Console.Write(string.Format("{0,-13}", reader["PAS_ID"]));
-                            Console.Write(string.Format("{0,-17}", reader["PAS_Numero"]));
-                            Console.Write(string.Format("{0,-14}", reader["PAS_Nom"]));
-                            Console.Write(string.Format("{0,-19}", reader["PAS_Position"]));
-                            Console.Write(string.Format("{0,-16}", reader["PAS_Temps"]));
-                            Console.Write(string.Format("{0,-20}", reader["PAS_Quittance"]));
-                            Console.Write(string.Format("{0,0}", reader["REC_ID"]));
-                            Console.WriteLine("");
-                            
-                            compteur++;
-                        }
+            string IDRecette = "";
+            List<string> listeRecettes = new List<string>();
 
-                        Console.WriteLine("\n{0} pas affiché(s).", compteur);
+            do
+            {
+                try
+                {
+                    Console.Write("\nVeuillez saisir l'ID de la recette pour voir les pas : ");
+                    IDRecette = Console.ReadLine();
+
+                    listeRecettes = GestionRecettes.StockerIDRecette();
+
+                    if (listeRecettes.Contains(IDRecette))
+                    {
+                        using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                        {
+                            cmd.CommandText = $"SELECT * FROM pas WHERE REC_ID = {IDRecette}";
+                            string colonnes = "\nID {0,-9} Numéro {0,-9} Nom {0,-9} Position {0,-9} Temps {0,-9} Quittance {0,-9} ID de la recette";
+                            Console.WriteLine(string.Format(colonnes, "", "", "", "", "", ""));
+                            Console.WriteLine("");
+
+                            using (MySqlDataReader reader = cmd.ExecuteReader())
+                            {
+                                int compteur = 0;
+                                while (reader.Read())
+                                {
+                                    Console.Write(string.Format("{0,-13}", reader["PAS_ID"]));
+                                    Console.Write(string.Format("{0,-17}", reader["PAS_Numero"]));
+                                    Console.Write(string.Format("{0,-14}", reader["PAS_Nom"]));
+                                    Console.Write(string.Format("{0,-19}", reader["PAS_Position"]));
+                                    Console.Write(string.Format("{0,-16}", reader["PAS_Temps"]));
+                                    Console.Write(string.Format("{0,-20}", reader["PAS_Quittance"]));
+                                    Console.Write(string.Format("{0,0}", reader["REC_ID"]));
+                                    Console.WriteLine("");
+
+                                    compteur++;
+                                }
+
+                                Console.WriteLine("\n{0} pas affiché(s).", compteur);
+                                GestionMenuPrincipale.EntrerSaisieUtilisateur();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write("\nL'ID de la recette n'existe pas, veuillez réessayer.");
+                        Console.ResetColor();
                     }
                 }
-            }
-            catch (MySqlException ex)
-            {
-                Console.Write("\nAttention il y a eu le problème suivant : ");
-                Console.Write(ex.Message);
-                Console.Write("\n\n");
-            }
-
-            GestionMenuPrincipale.EntrerSaisieUtilisateur();
+                catch (MySqlException ex)
+                {
+                    Console.Write("\nAttention il y a eu le problème suivant : ");
+                    Console.Write(ex.Message);
+                    Console.Write("\n\n");
+                }
+            } while (!listeRecettes.Contains(IDRecette));
         }
+
 
         /// <summary>
         /// Permet d'effacer un pas.
@@ -442,6 +462,34 @@ namespace M2_Gestion_Flexible_Chariot
             Console.WriteLine("Nombre d'enregistrements effacés : {0}\n", nbreEffacés);
             Console.Write("Veuillez appuyer sur une touche pour continuer... ");
             Console.ReadKey();
+        }
+
+        /// <summary>
+        /// Permet d'effacer un pas.
+        /// </summary>
+        public static void EffacerTousPasRecette(string ID)
+        {
+            int nbreEffacés = 0;
+            
+                nbreEffacés = 0;
+
+                try
+                {
+                    using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                    {
+                        cmd.CommandText = "DELETE FROM pas WHERE REC_ID = @id;";
+                        cmd.Parameters.AddWithValue("@id", ID);
+                        nbreEffacés += cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    Console.Write("\nAttention il y a eu le problème suivant : ");
+                    Console.Write(ex.Message);
+                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
+                    Console.ReadKey();
+                    Console.Write("\n\n");
+                }
         }
 
         /// <summary>
@@ -546,7 +594,7 @@ namespace M2_Gestion_Flexible_Chariot
                     cmd.CommandText = "UPDATE pas (PAS_numéro) VALUES (@numéroPas) ;";
 
                     cmd.Parameters.AddWithValue("@numéroPas", );
-                    
+
 
                     nbreAjout += cmd.ExecuteNonQuery();
                     nbreLots++;
@@ -561,6 +609,5 @@ namespace M2_Gestion_Flexible_Chariot
                 Console.Write("\n\n");
             }
             */
-
     }
 }
