@@ -18,16 +18,19 @@ namespace M2_Gestion_Flexible_Chariot
         {
             Console.Clear();
             Console.WriteLine("__________________________________________________");
-            Console.WriteLine("\t      *** Menu recettes ***                     ");
+            Console.WriteLine("\t      *** recettes ***                          ");
             Console.WriteLine("__________________________________________________");
             Console.WriteLine("\n1. Création de recettes");
             Console.WriteLine("2. Affichage de recettes");
             Console.WriteLine("3. Effacement de recettes");
             Console.WriteLine("4. Edition de recettes");
-            Console.WriteLine("--------------------------------------------------");
-            Console.WriteLine("5. Effacement de pas");
-            Console.WriteLine("6. Edition de pas");
-            Console.WriteLine("\n7. Revenir au menu principale");
+            Console.WriteLine("__________________________________________________");
+            Console.WriteLine("\t        *** Pas ***                             ");
+            Console.WriteLine("__________________________________________________");
+            Console.WriteLine("\n5. Afficher tous les pas d'une recette");
+            Console.WriteLine("6. Effacement de pas");
+            Console.WriteLine("7. Edition de pas");
+            Console.WriteLine("\n8. Revenir au menu principale");
             Console.WriteLine("__________________________________________________");
         }
 
@@ -37,6 +40,8 @@ namespace M2_Gestion_Flexible_Chariot
         public static void ChoixMenuRecettes()
         {
             char choixMenuRecettes = ' ';
+            string IDPas = "";
+            string IDRecette = "";
 
             Console.Write("Votre choix : ");
             choixMenuRecettes = char.Parse(Console.ReadLine());
@@ -61,16 +66,24 @@ namespace M2_Gestion_Flexible_Chariot
                     ChoixMenuRecettes();
                     break;
                 case '4':
-
                     break;
                 case '5':
-                    GestionPas.EffacerPas();
+                    GestionRecettes.AffichageRecettes();
+                    IDRecette = SaisirIDRecette();
+                    GestionPas.AfficherPas(IDRecette);
+                    AffichageMenuRecettes();
                     break;
                 case '6':
-                    GestionPas.AfficherPas();
-                    GestionPas.ModifierPas();
+                    GestionPas.EffacerPas();
                     break;
+
                 case '7':
+                    //GestionPas.AfficherPas();
+                    IDPas = GestionPas.ChoisirPasAModifier();
+                    GestionPas.ModifierPas(IDPas);
+                    break;
+
+                case '8':
                     GestionMenuPrincipale.AffichageMenuPrincipale();
                     break;
                 default:
@@ -129,6 +142,7 @@ namespace M2_Gestion_Flexible_Chariot
                         IDRecette = cmd.ExecuteScalar().ToString();
                     }
 
+
                     GestionPas.CréationPas(ref IDRecette);
 
                     Console.Write("\nVoulez-vouz ajouter une autre recette (O/N) ? : ");
@@ -163,19 +177,24 @@ namespace M2_Gestion_Flexible_Chariot
                 using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                 {
                     cmd.CommandText = "SELECT * FROM recette ";
-                    Console.Write("\nID\t");
-                    Console.Write("Nom\t\t".PadLeft(6));
-                    Console.Write(" Date de création\n".PadLeft(12));
+                    string colonnes = "\nID {0,-10} Nom {0,-10} Date de création";
+                    Console.WriteLine(string.Format(colonnes, "", "", ""));
+                    Console.WriteLine("");
+
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         int compteur = 0;
                         while (reader.Read())
                         {
-                            Console.WriteLine("\n{0}\t {1}\t\t {2}".PadLeft(10), reader["REC_ID"], reader["REC_Nom"], reader["REC_DateCreation"]);
+                            Console.Write(string.Format("{0,-14}", reader["REC_ID"]));
+                            Console.Write(string.Format("{0,-15}", reader["REC_Nom"]));
+                            Console.Write(string.Format("{0,0}", reader["REC_DateCreation"]));
+                            Console.WriteLine("");
+
                             compteur++;
                         }
 
-                        Console.WriteLine("\n{0} recettes affichées.\n", compteur);
+                        Console.WriteLine("\n{0} recettes affichées.", compteur);
                     }
                 }
             }
@@ -185,6 +204,37 @@ namespace M2_Gestion_Flexible_Chariot
                 Console.Write(ex.Message);
                 Console.Write("\n\n");
             }
+        }
+
+        /// <summary>
+        /// Demande à l'utilisateur l'ID d'une recette
+        /// </summary>
+        public static string SaisirIDRecette()
+        {
+            string saisieUtilisateur = "";
+            bool saisieValide = false;
+            int résultat = 0;
+
+            do
+            {
+                Console.Write("\nVeuillez saisir l'ID de la recette pour voir les pas : ");
+                saisieUtilisateur = Console.ReadLine();
+
+                if (!int.TryParse(saisieUtilisateur, out résultat))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\nVeuillez saisir une valeur correcte (nombre(s)).");
+                    Console.ResetColor();
+                }
+
+                else
+                {
+                    saisieValide = true;
+                }
+
+            } while (saisieValide == false);
+
+            return saisieUtilisateur;
         }
 
         /// <summary>

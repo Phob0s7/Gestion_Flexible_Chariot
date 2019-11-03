@@ -7,12 +7,12 @@ using MySql.Data.MySqlClient;
 
 namespace M2_Gestion_Flexible_Chariot
 {
-   public class GestionLots
+    public class GestionLots
     {
         /// <summary>
         /// Permet d'afficher le menu des lots.
         /// </summary>
-       public static void AffichageMenuLots()
+        public static void AffichageMenuLots()
         {
             Console.Clear();
             Console.WriteLine("__________________________________________________");
@@ -83,62 +83,130 @@ namespace M2_Gestion_Flexible_Chariot
             int nbreAjout = 0;
             int qtePièceRéalisée = 0;
             int qtePièceAProduire = 0;
-            int IDRecette = 0;
-            int IDStatut = 0;
+            string IDRecette = "";
+            int IDStatutAttente = 0;
             char choixCréationLots = ' ';
+            List<string> listeIDRecette = new List<string>();
+
 
             DateTime dateTime = DateTime.Now;
 
             do
             {
                 Console.Clear();
-
                 Console.WriteLine("               Lot n° " + nbreLots);
-                Console.Write("\nQuelle est la quantité de pièce à produire ? : ");
-                qtePièceAProduire = int.Parse(Console.ReadLine());
+                qtePièceAProduire = SaisirQtePiècesAProduire();
                 GestionRecettes.AffichageRecettes();
-                Console.Write("Quelle est l'ID de la recette a associer à ce lot ? : ");
-                IDRecette = int.Parse(Console.ReadLine());
-                GestionStatuts.AffichageStatut();
-                Console.Write("\n\nQuelle est l'ID du statut a associer à ce lot ? : ");
-                IDStatut = int.Parse(Console.ReadLine());
 
-
-                try
+                do
                 {
-                    using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                    IDRecette = SaisirIDRecette(); ;
+                    IDStatutAttente = GestionStatuts.ObtenirIDStatut();
+
+                    try
                     {
-                        cmd.CommandText = "INSERT INTO lot (LOT_QtePieceRealisee, LOT_QtePieceAProduire, LOT_DateCreation, REC_ID, STA_ID) VALUES (@pièceRéalisée, @pièceProduire, @date, @RECID, @STAID);";
+                        using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                        {
+                            cmd.CommandText = "SELECT REC_ID FROM recette ";
 
-                        cmd.Parameters.AddWithValue("@pièceRéalisée", qtePièceRéalisée);
-                        cmd.Parameters.AddWithValue("@pièceProduire", qtePièceAProduire);
-                        cmd.Parameters.AddWithValue("@date", dateTime);
-                        cmd.Parameters.AddWithValue("@RECID", IDRecette);
-                        cmd.Parameters.AddWithValue("@STAID", IDStatut);
+                            using (MySqlDataReader reader = cmd.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    listeIDRecette.Add(reader.GetString(reader.GetOrdinal("REC_ID")));
+                                }
+                            }
 
-                        Console.Write("\nVoulez-vous créer un nouveau lot ? (O/N) ");
+                            if (listeIDRecette.Contains(IDRecette))
+                            {
+                                cmd.CommandText = "INSERT INTO lot (LOT_QtePieceRealisee, LOT_QtePieceAProduire, LOT_DateCreation, REC_ID, STA_ID) VALUES (@pièceRéalisée, @pièceProduire, @date, @RECID, @STAID);";
 
-                        choixCréationLots = char.Parse(Console.ReadLine().ToUpper());
+                                cmd.Parameters.AddWithValue("@pièceRéalisée", qtePièceRéalisée);
+                                cmd.Parameters.AddWithValue("@pièceProduire", qtePièceAProduire);
+                                cmd.Parameters.AddWithValue("@date", dateTime);
+                                cmd.Parameters.AddWithValue("@RECID", IDRecette);
+                                cmd.Parameters.AddWithValue("@STAID", IDStatutAttente);
 
-                        nbreAjout += cmd.ExecuteNonQuery();
-                        nbreLots++;
+                                Console.Write("\nVoulez-vous créer un nouveau lot ? (O/N) ");
+
+                                choixCréationLots = char.Parse(Console.ReadLine().ToUpper());
+                                nbreAjout += cmd.ExecuteNonQuery();
+                                nbreLots++;
+                            }
+
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("\nL'ID de la recette n'existe pas, veuillez réessayer.");
+                                Console.ResetColor();
+
+                            }
+                        }
                     }
-                }
-                catch (MySqlException ex)
-                {
-                    Console.Write("\nAttention il y a eu le problème suivant : ");
-                    Console.Write(ex.Message);
-                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
-                    Console.ReadKey();
-                    Console.Write("\n\n");
-                }
+                    catch (MySqlException ex)
+                    {
+                        Console.Write("\nAttention il y a eu le problème suivant : ");
+                        Console.Write(ex.Message);
+                        Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
+                        Console.ReadKey();
+                        Console.Write("\n\n");
+                    }
+                } while (!listeIDRecette.Contains(IDRecette));
             } while (choixCréationLots != 'N');
 
-            Console.WriteLine("\nNombre de lots ajoutés : {0}", nbreAjout);
-            Console.Write("\nVeuillez appuyer sur une touche pour continuer... ");
-            Console.ReadKey();
+            Console.WriteLine("\nNombre de lots créés : {0}", nbreAjout);
+            GestionMenuPrincipale.EntrerSaisieUtilisateur();
         }
 
+        /// <summary>
+        /// Saisie la quantité de pièce à produire
+        /// </summary>
+        public static int SaisirQtePiècesAProduire()
+        {
+            string saisieUtilisateur = "";
+            bool saisieValide = false;
+            int qtePièceAProduire = 0;
+
+            do
+            {
+                Console.Write("\nQuelle est la quantité de pièce à produire ? : ");
+                saisieUtilisateur = Console.ReadLine();
+
+                if (!int.TryParse(saisieUtilisateur, out qtePièceAProduire))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\nVeuillez saisir une valeur correcte (nombre).");
+                    Console.ResetColor();
+                }
+
+                else
+                {
+                    qtePièceAProduire = int.Parse(saisieUtilisateur);
+                    saisieValide = true;
+                }
+
+            } while (saisieValide == false);
+
+            return qtePièceAProduire;
+        }
+
+        /// <summary>
+        /// Demande à l'utilisateur l'ID d'une recette
+        /// </summary>
+        public static string SaisirIDRecette()
+        {
+            string saisieUtilisateur = "";
+            bool saisieValide = false;
+            string IDRecette = "";
+
+
+            Console.Write("\nQuelle est l'ID de la recette a associer à ce lot ? : ");
+            IDRecette = Console.ReadLine();
+
+
+
+            return IDRecette;
+        }
         /// <summary>
         /// Permet d'afficher la liste des lots.
         /// </summary>
@@ -151,19 +219,22 @@ namespace M2_Gestion_Flexible_Chariot
                 using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                 {
                     cmd.CommandText = "SELECT * FROM lot";
-                    Console.Write("\nID\t");
-                    Console.Write("Quantité de lots réalisées\t\t".PadLeft(6));
-                    Console.Write(" Quantité de lots à produire".PadLeft(12));
-                    Console.Write(" Date de création".PadLeft(12));
-                    Console.Write(" L'ID de la recette".PadLeft(12));
-                    Console.Write(" Statut du lot".PadLeft(12));
+                    string colonnes = "\nID du lot {0,-4} Quantité réalisée {0,-4} Quantité à produire {0,-4} Date de création {0,-4} ID de la recette {0,-4} Statut du lot\n";
+                    Console.Write(string.Format(colonnes, "", "", ""));
 
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         int compteur = 0;
                         while (reader.Read())
                         {
-                            Console.WriteLine("\n{0}\t\t {1}\t {2}\t\t {3}\t\t {4}\t\t {5}", reader["LOT_ID"], reader["LOT_QtePieceRealisee"], reader["LOT_QtePieceAProduire"], reader["LOT_DateCreation"], reader["REC_ID"], reader["STA_ID"]);
+                            Console.Write(string.Format("{0,-15}", reader["LOT_ID"]));
+                            Console.Write(string.Format("{0,-23}", reader["LOT_QtePieceRealisee"]));
+                            Console.Write(string.Format("{0,-25}", reader["LOT_QtePieceAProduire"]));
+                            Console.Write(string.Format("{0,-22}", reader["LOT_DateCreation"]));
+                            Console.Write(string.Format("{0,-22}", reader["REC_ID"]));
+                            Console.Write(string.Format("{0,0}", reader["STA_ID"]));
+                            Console.Write("\n");
+
                             compteur++;
                         }
 

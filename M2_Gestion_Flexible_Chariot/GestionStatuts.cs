@@ -10,27 +10,18 @@ namespace M2_Gestion_Flexible_Chariot
     class GestionStatuts
     {
         /// <summary>
-        /// Permet d'afficher la liste des statuts.
+        /// Obtient l'ID du statut "En attente de production".
         /// </summary>
-        public static void AffichageStatut()
+        public static int ObtenirIDStatut()
         {
+            int IDStatut = 0;
             try
             {
                 using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                 {
-                    cmd.CommandText = "SELECT * FROM statut";
+                    cmd.CommandText = $"SELECT STA_ID FROM statut WHERE STA_ID = {1}";
 
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        int compteur = 0;
-                        while (reader.Read())
-                        {
-                            Console.WriteLine("\n{0} {1}", reader["STA_ID"], reader["STA_Libelle"]);
-                            compteur++;
-                        }
-
-                        Console.WriteLine("\n{0} statuts affichés.\n", compteur);
-                    }
+                    IDStatut = (int)cmd.ExecuteScalar();
                 }
             }
             catch (MySqlException ex)
@@ -41,6 +32,8 @@ namespace M2_Gestion_Flexible_Chariot
                 Console.ReadKey();
                 Console.Write("\n\n");
             }
+
+            return IDStatut;
         }
     }
 }

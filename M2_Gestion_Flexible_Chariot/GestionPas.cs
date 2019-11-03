@@ -15,24 +15,23 @@ namespace M2_Gestion_Flexible_Chariot
         public static void CréationPas(ref string IDRecette)
         {
             int nbreAjout = 0;
-            char choixCréationPas = ' ';
-            int nombrePas = 1;
+            string choixCréationPas = "";
             int numéroPas = 0;
             string nomPas = "";
             int positionPas = 0;
             int tempsPas = 0;
             bool quittancePas = false;
-            string IDRecettes = "";
+            int nombrePas = 1;
 
             do
             {
-                numéroPas = SaisieNuméroPas(ref nombrePas);
+                Console.WriteLine("\n\n\t      Pas n° " + nombrePas + "\n");
+
+                numéroPas = SaisieNuméroPas();
                 nomPas = SaisieNomPas();
                 positionPas = SaisiePositionPas();
                 tempsPas = SaisieDuréePas();
                 quittancePas = SaisieQuittancePas();
-                //Console.WriteLine("\nRecette à associer :\n");
-                //IDRecettes = SaisieIDRecette(ref IDRecette);
 
                 try
                 {
@@ -48,10 +47,8 @@ namespace M2_Gestion_Flexible_Chariot
                         cmd.Parameters.AddWithValue("@quittance", quittancePas);
                         cmd.Parameters.AddWithValue("@IDREC", IDRecette);
 
-                        Console.Write("\nVoulez-vous créer à nouveau un pas (O/N) ? : ");
-                        choixCréationPas = char.Parse(Console.ReadLine().ToUpper());
-                        Console.Write("\n");
-                        nbreAjout = nbreAjout + cmd.ExecuteNonQuery();
+                        choixCréationPas = ErreurSaisirChoix("\nVoulez-vous créer à nouveau un pas (O/N) ? : ", choixCréationPas);
+                        nbreAjout += cmd.ExecuteNonQuery();
                         nombrePas++;
                     }
                 }
@@ -77,25 +74,55 @@ namespace M2_Gestion_Flexible_Chariot
                     Console.Write("\n\n");
                 }
 
-                if (nombrePas == 10)
+                if (nombrePas == 11)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Vous ne pouvez plus créer de pas supplémentaire");
+                    Console.WriteLine("Vous ne pouvez plus créer de pas supplémentaire pour cette recette\n");
                     Console.ResetColor();
                 }
 
-            } while (choixCréationPas != 'N' && nombrePas < 10);
+            } while (choixCréationPas != "N" && nombrePas < 11);
 
-            Console.WriteLine("Nombre de pas ajoutés : {0}\n", nbreAjout);
+            Console.WriteLine("\nNombre de pas ajoutés : {0}\n", nbreAjout);
             Console.Write("Veuillez appuyer sur une touche pour continuer... ");
             Console.ReadKey();
             Console.WriteLine("\n");
         }
 
         /// <summary>
+        /// Répète l'erreur de saisie
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="choixCréation"></param>
+        public static string ErreurSaisirChoix(string message, string choixCréation)
+        {
+            bool saisieValide = false;
+            do
+            {
+                Console.Write(message);
+                choixCréation = Console.ReadLine().ToUpper();
+
+                if (choixCréation != "O" && choixCréation != "N")
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\nVeuillez saisir o ou n.");
+                    Console.ResetColor();
+                }
+
+                else
+                {
+                    saisieValide = true;
+                }
+
+            } while (saisieValide == false);
+
+            return choixCréation;
+        }
+
+        /// <summary>
         /// Permet de saisir le numéro du pas.
         /// </summary>
-        public static int SaisieNuméroPas(ref int nombrePas)
+        public static int SaisieNuméroPas()
         {
             string saisieUtilisateur = "";
             int numéroPas = 0;
@@ -103,8 +130,6 @@ namespace M2_Gestion_Flexible_Chariot
 
             do
             {
-                Console.WriteLine("\n\n\t      Pas n° " + nombrePas + "\n");
-
                 Console.Write("Quel est le numéro du pas ? : ");
                 saisieUtilisateur = Console.ReadLine();
 
@@ -322,31 +347,35 @@ namespace M2_Gestion_Flexible_Chariot
         /// <summary>
         /// Affiche les pas existant.
         /// </summary>
-        public static void AfficherPas()
+        public static void AfficherPas(string IDRecette)
         {
             try
             {
                 using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                 {
-                    cmd.CommandText = "SELECT * FROM pas ";
-                    Console.Write("\nID\t");
-                    Console.Write("Numéro\t\t".PadLeft(6));
-                    Console.Write(" Nom".PadLeft(12));
-                    Console.Write(" Position".PadLeft(12));
-                    Console.Write(" Temps".PadLeft(12));
-                    Console.Write(" Quittance".PadLeft(12));
-                    Console.WriteLine(" ID de la recette".PadLeft(12));
+                    cmd.CommandText = $"SELECT * FROM pas WHERE REC_ID = {IDRecette}";
+                    string colonnes = "\nID {0,-9} Numéro {0,-9} Nom {0,-9} Position {0,-9} Temps {0,-9} Quittance {0,-9} ID de la recette";
+                    Console.WriteLine(string.Format(colonnes, "", "", "", "", "", ""));
+                    Console.WriteLine("");
+                    
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         int compteur = 0;
                         while (reader.Read())
                         {
-                            Console.WriteLine("{0}\t {1}\t\t {2}\t\t {3}\t\t {4}\t\t {5}\t\t {6}\t\t".PadLeft(10), reader["PAS_ID"], reader["PAS_Numero"], reader["PAS_Nom"], reader["PAS_Position"],
-                                             reader["PAS_Temps"], reader["PAS_Quittance"], reader["REC_ID"]);
+                            Console.Write(string.Format("{0,-13}", reader["PAS_ID"]));
+                            Console.Write(string.Format("{0,-17}", reader["PAS_Numero"]));
+                            Console.Write(string.Format("{0,-14}", reader["PAS_Nom"]));
+                            Console.Write(string.Format("{0,-19}", reader["PAS_Position"]));
+                            Console.Write(string.Format("{0,-16}", reader["PAS_Temps"]));
+                            Console.Write(string.Format("{0,-20}", reader["PAS_Quittance"]));
+                            Console.Write(string.Format("{0,0}", reader["REC_ID"]));
+                            Console.WriteLine("");
+                            
                             compteur++;
                         }
 
-                        Console.WriteLine("\n{0} pas affichées.\n", compteur);
+                        Console.WriteLine("\n{0} pas affichées.", compteur);
                     }
                 }
             }
@@ -356,6 +385,8 @@ namespace M2_Gestion_Flexible_Chariot
                 Console.Write(ex.Message);
                 Console.Write("\n\n");
             }
+
+            GestionMenuPrincipale.EntrerSaisieUtilisateur();
         }
 
         /// <summary>
@@ -425,16 +456,28 @@ namespace M2_Gestion_Flexible_Chariot
             Console.WriteLine("5. Modification de la quittance");
             Console.WriteLine("6. Modification de l'ID de la recette");
         }
+
         /// <summary>
-        /// Modifie les pas existants.
+        /// Choisis le pas à modifier
         /// </summary>
-        public static void ModifierPas()
+        public static string ChoisirPasAModifier()
         {
-            string saisieUtilisateur = "";
             string saisieIDPas = "";
 
             Console.Write("Choix du pas à modifier : ");
             saisieIDPas = Console.ReadLine();
+            Console.WriteLine("");
+
+            return saisieIDPas;
+        }
+
+        /// <summary>
+        /// Saisie un choix pour le menu de modification du pas.
+        /// </summary>
+        public static void ModifierPas(string IDPas)
+        {
+            int numéroPas = 0;
+            string saisieUtilisateur = " ";
 
             AfficherMenuModiferPas();
 
@@ -444,12 +487,80 @@ namespace M2_Gestion_Flexible_Chariot
             switch (saisieUtilisateur)
             {
                 case "1":
-                    //SaisieNuméroPas()
+                    numéroPas = SaisieNuméroPas();
+                    Console.WriteLine("Modification effectuée");
+                    GestionMenuPrincipale.EntrerSaisieUtilisateur();
+                    AfficherMenuModiferPas();
+                    ModifierPas(IDPas);
+                    break;
+                case "2":
+                    numéroPas = SaisieNuméroPas();
+                    Console.WriteLine("Modification effectuée");
+                    GestionMenuPrincipale.EntrerSaisieUtilisateur();
+                    AfficherMenuModiferPas();
+                    ModifierPas(IDPas);
+                    break;
+                case "3":
+                    numéroPas = SaisieNuméroPas();
+                    Console.WriteLine("Modification effectuée");
+                    GestionMenuPrincipale.EntrerSaisieUtilisateur();
+                    AfficherMenuModiferPas();
+                    ModifierPas(IDPas);
+                    break;
+                case "4":
+                    numéroPas = SaisieNuméroPas();
+                    Console.WriteLine("Modification effectuée");
+                    GestionMenuPrincipale.EntrerSaisieUtilisateur();
+                    AfficherMenuModiferPas();
+                    ModifierPas(IDPas);
+                    break;
+                case "5":
+                    numéroPas = SaisieNuméroPas();
+                    Console.WriteLine("Modification effectuée");
+                    GestionMenuPrincipale.EntrerSaisieUtilisateur();
+                    AfficherMenuModiferPas();
+                    ModifierPas(IDPas);
+                    break;
+                case "6":
+                    numéroPas = SaisieNuméroPas();
+                    Console.WriteLine("Modification effectuée");
+                    GestionMenuPrincipale.EntrerSaisieUtilisateur();
+                    AfficherMenuModiferPas();
+                    ModifierPas(IDPas);
                     break;
                 default:
                     break;
             }
-
         }
+
+        /*
+        /// <summary>
+        /// Met à jour les informations d'un pas.
+        /// </summary>
+        public static void MettreAJourPas()
+        {
+            try
+            {
+                using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
+                {
+                    cmd.CommandText = "UPDATE pas (PAS_numéro) VALUES (@numéroPas) ;";
+
+                    cmd.Parameters.AddWithValue("@numéroPas", );
+                    
+
+                    nbreAjout += cmd.ExecuteNonQuery();
+                    nbreLots++;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                Console.Write("\nAttention il y a eu le problème suivant : ");
+                Console.Write(ex.Message);
+                Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
+                Console.ReadKey();
+                Console.Write("\n\n");
+            }
+            */
+
     }
 }

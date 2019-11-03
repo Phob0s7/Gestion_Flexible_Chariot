@@ -76,28 +76,30 @@ namespace M2_Gestion_Flexible_Chariot
         {
             Console.Write("Veuillez saisir l'ID du lot pour afficher les événements : ");
             string IDHistoriqueLot = Console.ReadLine();
-            Console.WriteLine("\n");
+            Console.Write("\n");
 
             try
             {
                 using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                 {
-                    cmd.CommandText = $"SELECT * FROM evenement WHERE LOT_ID = {IDHistoriqueLot} ";
-                    Console.Write("ID\t");
-                    Console.Write("Libellé\t");
-                    Console.Write("Date de création\t");
-                    Console.Write("l'ID du lot\t");
+                    cmd.CommandText = $"SELECT EVE_Libelle, EVE_Date, LOT_ID FROM evenement WHERE LOT_ID = {IDHistoriqueLot} ";
+                    string colonnes = "Libellé {0,-15} Date de création {0,-15} ID du lot\n";
+                    Console.Write(string.Format(colonnes, "", "", ""));
 
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         int compteur = 0;
+                        Console.Write("\n");
                         while (reader.Read())
                         {
-                            Console.WriteLine("\n{0} {1} {2} {3}", reader["EVE_ID"], reader["EVE_Libelle"], reader["EVE_Date"], reader["LOT_ID"]);
+                            Console.Write(string.Format("{0,-24}", reader["EVE_Libelle"]));
+                            Console.Write(string.Format("{0,-33}", reader["EVE_Date"]));
+                            Console.Write(string.Format("{0,0}", reader["LOT_ID"]));
+
                             compteur++;
                         }
-
-                        Console.WriteLine("\n{0} événements affichés.\n", compteur);
+                        Console.Write("\n");
+                        Console.WriteLine("\n{0} événements affichés.", compteur);
                     }
                 }
             }
@@ -108,8 +110,8 @@ namespace M2_Gestion_Flexible_Chariot
                 GestionMenuPrincipale.EntrerSaisieUtilisateur();
                 Console.Write("\n\n");
             }
-            Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
-            Console.ReadKey();
+
+            GestionMenuPrincipale.EntrerSaisieUtilisateur();
         }
     }
 }
