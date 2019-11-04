@@ -170,7 +170,7 @@ namespace M2_Gestion_Flexible_Chariot
                 if (int.TryParse(saisiUtilisateur, out résultatConversionI) || saisiUtilisateur == "" || float.TryParse(saisiUtilisateur, out résultatConversionF))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Write("Veuillez saisir une valeur correcte (lettre(s)).");
+                    Console.Write("\nVeuillez saisir une valeur correcte (lettre(s)).\n\n");
                     Console.ResetColor();
                 }
 
@@ -356,7 +356,7 @@ namespace M2_Gestion_Flexible_Chariot
             {
                 try
                 {
-                    Console.Write("\nVeuillez saisir l'ID de la recette pour voir les pas : ");
+                    Console.Write("\n\nVeuillez saisir l'ID de la recette pour voir les pas : ");
                     IDRecette = Console.ReadLine();
 
                     listeRecettes = GestionRecettes.StockerIDRecette();
@@ -470,26 +470,26 @@ namespace M2_Gestion_Flexible_Chariot
         public static void EffacerTousPasRecette(string ID)
         {
             int nbreEffacés = 0;
-            
-                nbreEffacés = 0;
 
-                try
+            nbreEffacés = 0;
+
+            try
+            {
+                using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
                 {
-                    using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
-                    {
-                        cmd.CommandText = "DELETE FROM pas WHERE REC_ID = @id;";
-                        cmd.Parameters.AddWithValue("@id", ID);
-                        nbreEffacés += cmd.ExecuteNonQuery();
-                    }
+                    cmd.CommandText = "DELETE FROM pas WHERE REC_ID = @id;";
+                    cmd.Parameters.AddWithValue("@id", ID);
+                    nbreEffacés += cmd.ExecuteNonQuery();
                 }
-                catch (MySqlException ex)
-                {
-                    Console.Write("\nAttention il y a eu le problème suivant : ");
-                    Console.Write(ex.Message);
-                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
-                    Console.ReadKey();
-                    Console.Write("\n\n");
-                }
+            }
+            catch (MySqlException ex)
+            {
+                Console.Write("\nAttention il y a eu le problème suivant : ");
+                Console.Write(ex.Message);
+                Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
+                Console.ReadKey();
+                Console.Write("\n\n");
+            }
         }
 
         /// <summary>

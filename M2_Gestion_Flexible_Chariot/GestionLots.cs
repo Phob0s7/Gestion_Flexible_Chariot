@@ -86,7 +86,7 @@ namespace M2_Gestion_Flexible_Chariot
             int qtePièceAProduire = 0;
             string IDRecette = "";
             int IDStatutAttente = 0;
-            char choixCréationLots = ' ';
+            string choixCréationLots = "";
             List<string> listeIDRecette = new List<string>();
 
             DateTime dateTime = DateTime.Now;
@@ -119,9 +119,8 @@ namespace M2_Gestion_Flexible_Chariot
                                 cmd.Parameters.AddWithValue("@RECID", IDRecette);
                                 cmd.Parameters.AddWithValue("@STAID", IDStatutAttente);
 
-                                Console.Write("\nVoulez-vous créer un nouveau lot ? (O/N) ");
+                                choixCréationLots = GestionPas.ErreurSaisirChoix("\nVoulez-vous créer un nouveau lot ? (O/N) ", choixCréationLots);
 
-                                choixCréationLots = char.Parse(Console.ReadLine().ToUpper());
                                 nbreAjout += cmd.ExecuteNonQuery();
                                 nbreLots++;
                             }
@@ -144,7 +143,7 @@ namespace M2_Gestion_Flexible_Chariot
                         Console.Write("\n\n");
                     }
                 } while (!listeIDRecette.Contains(IDRecette));
-            } while (choixCréationLots != 'N');
+            } while (choixCréationLots != "N");
 
             Console.WriteLine("\nNombre de lots créés : {0}", nbreAjout);
             GestionMenuPrincipale.EntrerSaisieUtilisateur();

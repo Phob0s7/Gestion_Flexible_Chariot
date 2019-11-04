@@ -105,7 +105,7 @@ namespace M2_Gestion_Flexible_Chariot
         /// </summary>
         public static void CréationRecettes()
         {
-            char choixAjouterRecette = ' ';
+            string choixAjouterRecette = "";
             int nombreRecette = 1;
             int nbreAjout = 0;
             string IDRecette = "";
@@ -141,9 +141,7 @@ namespace M2_Gestion_Flexible_Chariot
 
                     GestionPas.CréationPas(ref IDRecette);
 
-                    Console.Write("Voulez-vouz ajouter une autre recette (O/N) ? : ");
-
-                    choixAjouterRecette = char.Parse(Console.ReadLine().ToUpper());
+                    choixAjouterRecette = GestionPas.ErreurSaisirChoix("\nVoulez-vouz ajouter une autre recette (O/N) ? : ", choixAjouterRecette);
                 }
                 catch (MySqlException ex)
                 {
@@ -154,7 +152,7 @@ namespace M2_Gestion_Flexible_Chariot
                     Console.Write("\n\n");
                 }
 
-            } while (choixAjouterRecette != 'N');
+            } while (choixAjouterRecette != "N");
 
             Console.Write("\nNombre de recette ajoutés : {0}\n", nbreAjout);
             GestionMenuPrincipale.EntrerSaisieUtilisateur();
@@ -279,7 +277,7 @@ namespace M2_Gestion_Flexible_Chariot
                 {
                     saisieInvalide = false;
 
-                    Console.Write("\nVeuillez saisir l'ID de la recette à modifier : ");
+                    Console.Write("Veuillez saisir l'ID de la recette à modifier : ");
                     string id = Console.ReadLine();
 
                     try
@@ -294,9 +292,7 @@ namespace M2_Gestion_Flexible_Chariot
                                 cmd.Parameters.AddWithValue("@id", id);
                                 cmd.Parameters.AddWithValue("@nom", nomRecette);
 
-                                Console.Write("\nVoulez-vouz modifier une autre recette (O/N) ? : ");
-
-                                choixModifierRecette = Console.ReadLine().ToUpper();
+                                choixModifierRecette = GestionPas.ErreurSaisirChoix("Voulez-vouz modifier une autre recette (O/N) ? : ", choixModifierRecette);
                                 nbreModifié += cmd.ExecuteNonQuery();
                             }
 
@@ -354,7 +350,7 @@ namespace M2_Gestion_Flexible_Chariot
         /// </summary>
         public static void EffacerRecettes()
         {
-            char choixEffacerRecette = ' ';
+            string choixEffacerRecette = "";
             int nbreEffacés = 0;
             string saisieUtilisateur = "";
             List<string> listeIDRecettes = new List<string>();
@@ -370,7 +366,7 @@ namespace M2_Gestion_Flexible_Chariot
             {
                 saisieInvalide = false;
 
-                saisieUtilisateur = VérifierSaisieNombre("\nVeuillez saisir l'ID de la recette à effacer : ");
+                saisieUtilisateur = VérifierSaisieNombre("\n\nVeuillez saisir l'ID de la recette à effacer : ");
                 Console.WriteLine("");
                 listeIDRecettes = StockerIDRecette();
 
@@ -387,9 +383,7 @@ namespace M2_Gestion_Flexible_Chariot
                             cmd.CommandText = "DELETE FROM recette WHERE REC_ID = @id;";
                             cmd.Parameters.AddWithValue("@id", saisieUtilisateur);
 
-                            Console.Write("Voulez-vouz effacer une autre recette (O/N) ? : ");
-
-                            choixEffacerRecette = char.Parse(Console.ReadLine().ToUpper());
+                            choixEffacerRecette = GestionPas.ErreurSaisirChoix("\nVoulez-vouz effacer une autre recette (O/N) ? : ", choixEffacerRecette);
                             nbreEffacés += cmd.ExecuteNonQuery();
                         }
 
@@ -397,21 +391,22 @@ namespace M2_Gestion_Flexible_Chariot
                         {
                             saisieInvalide = true;
                             Console.ForegroundColor = ConsoleColor.Red;
-                            Console.Write("L'ID de la recette n'existe pas, veuillez réessayer.");
+                            Console.Write("L'ID de la recette n'existe pas, veuillez réessayer.\n");
                             Console.ResetColor();
                         }
                     }
 
                 }
-                catch (MySqlException ex)
+                catch (MySqlException)
                 {
-                    Console.Write("\nAttention il y a eu le problème suivant : ");
-                    Console.Write(ex.Message);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write("\nAttention vous ne pouvez pas supprimer une recette associée à un lot.\n");
+                    Console.ResetColor();
                     Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
                     Console.ReadKey();
                     Console.Write("\n\n");
                 }
-            } while (choixEffacerRecette != 'N' || saisieInvalide == true);
+            } while (choixEffacerRecette != "N" || saisieInvalide == true);
 
             Console.Write("\nNombre de recettes effacés : {0}\n", nbreEffacés);
             GestionMenuPrincipale.EntrerSaisieUtilisateur();
