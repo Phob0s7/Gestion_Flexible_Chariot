@@ -40,7 +40,7 @@ namespace M2_Gestion_Flexible_Chariot
                         if (listeLots.Contains(IDHistoriqueLot))
                         {
                             cmd.CommandText = $"SELECT EVE_Libelle, EVE_Date, LOT_ID FROM evenement WHERE LOT_ID = {IDHistoriqueLot} ";
-                            string colonnes = "Libellé {0,-15} Date de création {0,-15} ID du lot\n";
+                            string colonnes = "Libellé {0,-25} Date de création {0,-25} ID du lot\n";
                             Console.Write(string.Format(colonnes, "", "", ""));
 
                             using (MySqlDataReader reader = cmd.ExecuteReader())
@@ -49,8 +49,8 @@ namespace M2_Gestion_Flexible_Chariot
                                 Console.Write("\n");
                                 while (reader.Read())
                                 {
-                                    Console.Write(string.Format("{0,-24}", reader["EVE_Libelle"]));
-                                    Console.Write(string.Format("{0,-33}", reader["EVE_Date"]));
+                                    Console.Write(string.Format("{0,-34}", reader["EVE_Libelle"]));
+                                    Console.Write(string.Format("{0,-43}", reader["EVE_Date"]));
                                     Console.Write(string.Format("{0,0}", reader["LOT_ID"]));
                                     Console.WriteLine("");
 
