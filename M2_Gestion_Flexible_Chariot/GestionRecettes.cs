@@ -7,6 +7,9 @@ using MySql.Data.MySqlClient;
 
 namespace M2_Gestion_Flexible_Chariot
 {
+    /// <summary>
+    /// Classe qui contient la gestion des recettes.
+    /// </summary>
     public class GestionRecettes
     {
         static string nomRecette = "";
@@ -14,7 +17,7 @@ namespace M2_Gestion_Flexible_Chariot
         /// <summary>
         /// Permet d'afficher le menu recettes.
         /// </summary>
-        public static void AffichageMenuRecettes()
+        public static void AfficherMenuRecettes()
         {
             Console.Clear();
             Console.WriteLine("__________________________________________________");
@@ -28,18 +31,16 @@ namespace M2_Gestion_Flexible_Chariot
             Console.WriteLine("\t        *** Pas ***                             ");
             Console.WriteLine("__________________________________________________");
             Console.WriteLine("\n5. Afficher tous les pas d'une recette");
-            //Console.WriteLine("6. Edition de pas");
-            //Console.WriteLine("7. Effacement de pas");
             Console.WriteLine("\n6. Revenir au menu principale");
             Console.WriteLine("__________________________________________________");
         }
 
         /// <summary>
-        /// Permet de saisir le choix de l'utilisateur en fonction du menu recettes.
+        /// Permet de saisir le choix auprès de l'utilisateur en fonction du menu "Recettes".
         /// </summary>
-        public static void ChoixMenuRecettes()
+        public static void ChoisirMenuRecettes()
         {
-            string choixMenuRecettes = "";
+            string choisirMenuRecettes = "";
             bool saisieInvalide = false;
 
             do
@@ -47,54 +48,45 @@ namespace M2_Gestion_Flexible_Chariot
                 saisieInvalide = false;
 
                 Console.Write("Votre choix : ");
-                choixMenuRecettes = Console.ReadLine();
+                choisirMenuRecettes = Console.ReadLine();
 
-                switch (choixMenuRecettes)
+                switch (choisirMenuRecettes)
                 {
                     case "1":
                         CréationRecettes();
-                        AffichageMenuRecettes();
-                        ChoixMenuRecettes();
+                        AfficherMenuRecettes();
+                        ChoisirMenuRecettes();
                         break;
                     case "2":
-                        AffichageRecettes();
-                        GestionMenuPrincipale.EntrerSaisieUtilisateur();
-                        AffichageMenuRecettes();
-                        ChoixMenuRecettes();
+                        AfficherRecettes();
+                        GestionMenuPrincipale.AttenteSaisieUtilisateur();
+                        AfficherMenuRecettes();
+                        ChoisirMenuRecettes();
                         break;
                     case "3":
-                        AffichageRecettes();
-                        ModifierRecette();
-                        AffichageMenuRecettes();
-                        ChoixMenuRecettes();
+                        AfficherRecettes();
+                        ModifierNomRecettes();
+                        AfficherMenuRecettes();
+                        ChoisirMenuRecettes();
                         break;
                     case "4":
-                        AffichageRecettes();
+                        AfficherRecettes();
                         EffacerRecettes();
-                        AffichageMenuRecettes();
-                        ChoixMenuRecettes();
+                        AfficherMenuRecettes();
+                        ChoisirMenuRecettes();
                         break;
                     case "5":
-                        GestionRecettes.AffichageRecettes();
+                        GestionRecettes.AfficherRecettes();
                         GestionPas.AfficherPas();
-                        AffichageMenuRecettes();
-                        ChoixMenuRecettes();
+                        AfficherMenuRecettes();
+                        ChoisirMenuRecettes();
                         break;
-                    //case "6":
-                    //GestionPas.AfficherPas();
-                    //IDPas = GestionPas.ChoisirPasAModifier();
-                    //GestionPas.ModifierPas(IDPas);
-                    //break;
-                    //case "7":
-                    //GestionPas.EffacerPas();
-                    //break;
-
                     case "6":
-                        GestionMenuPrincipale.AffichageMenuPrincipale();
+                        GestionMenuPrincipale.AfficherMenuPrincipale();
                         break;
                     default:
                         saisieInvalide = true;
-                        GestionMenuPrincipale.ErreurSaisieMenu();
+                        GestionMenuPrincipale.AfficherErreurSaisieMenu();
                         break;
                 }
             } while (saisieInvalide);
@@ -138,9 +130,7 @@ namespace M2_Gestion_Flexible_Chariot
                         IDRecette = cmd.ExecuteScalar().ToString();
                     }
 
-
                     GestionPas.CréationPas(ref IDRecette);
-
                     choixAjouterRecette = GestionPas.ErreurSaisirChoix("\nVoulez-vouz ajouter une autre recette (O/N) ? : ", choixAjouterRecette);
                 }
                 catch (MySqlException ex)
@@ -155,13 +145,13 @@ namespace M2_Gestion_Flexible_Chariot
             } while (choixAjouterRecette != "N");
 
             Console.Write("\nNombre de recette ajoutés : {0}\n", nbreAjout);
-            GestionMenuPrincipale.EntrerSaisieUtilisateur();
+            GestionMenuPrincipale.AttenteSaisieUtilisateur();
         }
 
         /// <summary>
         /// Permet d'afficher la liste des recettes.
         /// </summary>
-        public static void AffichageRecettes()
+        public static void AfficherRecettes()
         {
             try
             {
@@ -198,8 +188,9 @@ namespace M2_Gestion_Flexible_Chariot
         }
 
         /// <summary>
-        /// Demande à l'utilisateur l'ID d'une recette
+        /// Demande à l'utilisateur l'ID d'une recette.
         /// </summary>
+        /// <returns>la saisie de l'utilisateur.</returns>
         public static string SaisirIDRecette()
         {
             string saisieUtilisateur = "";
@@ -229,8 +220,10 @@ namespace M2_Gestion_Flexible_Chariot
         }
 
         /// <summary>
-        /// Demande à l'utilisateur l'ID d'une recette
+        /// Vérifie la saisie d'un nombre.
         /// </summary>
+        /// <param name="messageSaisie"></param>
+        /// <returns>la saisie de l'utilisateur.</returns>
         public static string VérifierSaisieNombre(string messageSaisie)
         {
             string saisieUtilisateur = "";
@@ -258,12 +251,13 @@ namespace M2_Gestion_Flexible_Chariot
 
             return saisieUtilisateur;
         }
+
         /// <summary>
-        /// Modifie la strucuture d'une recette
+        /// Modifie le nom d'une recette.
         /// </summary>
-        public static void ModifierRecette()
+        public static void ModifierNomRecettes()
         {
-            string choixModifierRecette = "";
+            string choixModifierNomRecettes = "";
             int nbreModifié = 0;
             string nomRecette = "";
             bool saisieInvalide = false;
@@ -292,7 +286,7 @@ namespace M2_Gestion_Flexible_Chariot
                                 cmd.Parameters.AddWithValue("@id", id);
                                 cmd.Parameters.AddWithValue("@nom", nomRecette);
 
-                                choixModifierRecette = GestionPas.ErreurSaisirChoix("Voulez-vouz modifier une autre recette (O/N) ? : ", choixModifierRecette);
+                                choixModifierNomRecettes = GestionPas.ErreurSaisirChoix("Voulez-vouz modifier une autre recette (O/N) ? : ", choixModifierNomRecettes);
                                 nbreModifié += cmd.ExecuteNonQuery();
                             }
 
@@ -315,7 +309,7 @@ namespace M2_Gestion_Flexible_Chariot
                     }
                 } while (saisieInvalide);
 
-            } while (choixModifierRecette != "N");
+            } while (choixModifierNomRecettes != "N");
 
             Console.WriteLine("\nNombre de recettes modifiés : {0}\n", nbreModifié);
             Console.Write("Veuillez appuyer sur une touche pour continuer... ");
@@ -323,7 +317,7 @@ namespace M2_Gestion_Flexible_Chariot
         }
 
         /// <summary>
-        /// Vérifie si l'ID de la recette existe
+        /// Vérifie si l'ID de la recette existe.
         /// </summary>
         /// <returns>la liste des ID de la recette</returns>
         public static List<string> StockerIDRecette()
@@ -353,13 +347,14 @@ namespace M2_Gestion_Flexible_Chariot
             string choixEffacerRecette = "";
             int nbreEffacés = 0;
             string saisieUtilisateur = "";
-            List<string> listeIDRecettes = new List<string>();
             bool saisieInvalide = false;
+
+            List<string> listeIDRecettes = new List<string>();
 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Write("\nPour effacer une recette, il faut impérativement supprimer tous les pas qui lui sont associés.\n");
             Console.ResetColor();
-            GestionMenuPrincipale.EntrerSaisieUtilisateur();
+            GestionMenuPrincipale.AttenteSaisieUtilisateur();
             Console.WriteLine("");
 
             do
@@ -378,8 +373,6 @@ namespace M2_Gestion_Flexible_Chariot
                     {
                         if (listeIDRecettes.Contains(saisieUtilisateur))
                         {
-
-
                             cmd.CommandText = "DELETE FROM recette WHERE REC_ID = @id;";
                             cmd.Parameters.AddWithValue("@id", saisieUtilisateur);
 
@@ -395,7 +388,6 @@ namespace M2_Gestion_Flexible_Chariot
                             Console.ResetColor();
                         }
                     }
-
                 }
                 catch (MySqlException)
                 {
@@ -406,10 +398,11 @@ namespace M2_Gestion_Flexible_Chariot
                     Console.ReadKey();
                     Console.Write("\n\n");
                 }
+
             } while (choixEffacerRecette != "N" || saisieInvalide == true);
 
             Console.Write("\nNombre de recettes effacés : {0}\n", nbreEffacés);
-            GestionMenuPrincipale.EntrerSaisieUtilisateur();
+            GestionMenuPrincipale.AttenteSaisieUtilisateur();
         }
     }
 }

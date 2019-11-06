@@ -7,12 +7,15 @@ using MySql.Data.MySqlClient;
 
 namespace M2_Gestion_Flexible_Chariot
 {
+    /// <summary>
+    /// Classe qui contient la gestion des lots.
+    /// </summary>
     public class GestionLots
     {
         /// <summary>
         /// Permet d'afficher le menu des lots.
         /// </summary>
-        public static void AffichageMenuLots()
+        public static void AfficherMenuLots()
         {
             Console.Clear();
             Console.WriteLine("__________________________________________________");
@@ -20,16 +23,14 @@ namespace M2_Gestion_Flexible_Chariot
             Console.WriteLine("__________________________________________________");
             Console.WriteLine("\n1. Création de lots");
             Console.WriteLine("2. Affichage de lots");
-            //Console.WriteLine("3. Edition de lots");
-            //Console.WriteLine("4. Effacement de lots");
             Console.WriteLine("\n3. Revenir au menu principale");
             Console.WriteLine("__________________________________________________");
         }
 
         /// <summary>
-        /// Permet de saisir le choix de l'utilisateur en fonction du menu lots.
+        /// Permet de saisir le choix auprès de l'utilisateur en fonction du "Menu lots.
         /// </summary>
-        public static void ChoixMenuLots()
+        public static void ChoisirMenuLots()
         {
             string choixMenuLots = "";
             bool saisieInvalide = false;
@@ -45,31 +46,20 @@ namespace M2_Gestion_Flexible_Chariot
                 {
                     case "1":
                         CréationLots();
-                        AffichageMenuLots();
-                        ChoixMenuLots();
+                        AfficherMenuLots();
+                        ChoisirMenuLots();
                         break;
                     case "2":
-                        AffichageLots();
-                        AffichageMenuLots();
-                        ChoixMenuLots();
+                        AfficherLots();
+                        AfficherMenuLots();
+                        ChoisirMenuLots();
                         break;
-                    /*
-                case "3":
-
-                    break;
-                case "4":
-                    AffichageLots();
-                    EffacerLots();
-                    AffichageMenuLots();
-                    ChoixMenuLots();
-                    break;
-                    */
                     case "3":
-                        GestionMenuPrincipale.AffichageMenuPrincipale();
+                        GestionMenuPrincipale.AfficherMenuPrincipale();
                         break;
                     default:
                         saisieInvalide = true;
-                        GestionMenuPrincipale.ErreurSaisieMenu();
+                        GestionMenuPrincipale.AfficherErreurSaisieMenu();
                         break;
                 }
             } while (saisieInvalide == true);
@@ -87,6 +77,7 @@ namespace M2_Gestion_Flexible_Chariot
             string IDRecette = "";
             int IDStatutAttente = 0;
             string choixCréationLots = "";
+
             List<string> listeIDRecette = new List<string>();
 
             DateTime dateTime = DateTime.Now;
@@ -96,7 +87,7 @@ namespace M2_Gestion_Flexible_Chariot
                 Console.Clear();
                 Console.WriteLine("               Lot n° " + nbreLots);
                 qtePièceAProduire = SaisirQtePiècesAProduire();
-                GestionRecettes.AffichageRecettes();
+                GestionRecettes.AfficherRecettes();
 
                 do
                 {
@@ -120,7 +111,6 @@ namespace M2_Gestion_Flexible_Chariot
                                 cmd.Parameters.AddWithValue("@STAID", IDStatutAttente);
 
                                 choixCréationLots = GestionPas.ErreurSaisirChoix("\nVoulez-vous créer un nouveau lot ? (O/N) ", choixCréationLots);
-
                                 nbreAjout += cmd.ExecuteNonQuery();
                                 nbreLots++;
                             }
@@ -130,7 +120,6 @@ namespace M2_Gestion_Flexible_Chariot
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 Console.WriteLine("\nL'ID de la recette n'existe pas, veuillez réessayer.");
                                 Console.ResetColor();
-
                             }
                         }
                     }
@@ -146,11 +135,11 @@ namespace M2_Gestion_Flexible_Chariot
             } while (choixCréationLots != "N");
 
             Console.WriteLine("\nNombre de lots créés : {0}", nbreAjout);
-            GestionMenuPrincipale.EntrerSaisieUtilisateur();
+            GestionMenuPrincipale.AttenteSaisieUtilisateur();
         }
 
         /// <summary>
-        /// Saisie la quantité de pièce à produire
+        /// Saisie la quantité de pièce à produire.
         /// </summary>
         public static int SaisirQtePiècesAProduire()
         {
@@ -182,7 +171,7 @@ namespace M2_Gestion_Flexible_Chariot
         }
 
         /// <summary>
-        /// Demande à l'utilisateur l'ID d'une recette
+        /// Demande à l'utilisateur l'ID d'une recette.
         /// </summary>
         public static string SaisirIDRecette()
         {
@@ -196,7 +185,7 @@ namespace M2_Gestion_Flexible_Chariot
         /// <summary>
         /// Permet d'afficher la liste des lots.
         /// </summary>
-        public static void AffichageLots()
+        public static void AfficherLots()
         {
             try
             {
@@ -223,7 +212,7 @@ namespace M2_Gestion_Flexible_Chariot
                         }
 
                         Console.Write("\n{0} lots affiché(s).\n", compteur);
-                        GestionMenuPrincipale.EntrerSaisieUtilisateur();
+                        GestionMenuPrincipale.AttenteSaisieUtilisateur();
                     }
                 }
             }
@@ -235,48 +224,6 @@ namespace M2_Gestion_Flexible_Chariot
                 Console.ReadKey();
                 Console.Write("\n\n");
             }
-        }
-
-        /// <summary>
-        /// Permet d'effacer un lot.
-        /// </summary>
-        public static void EffacerLots()
-        {
-            char choixEffacerLot = ' ';
-            int nbreEffacés = 0;
-
-            do
-            {
-                Console.Write("Veuillez saisir l'ID du lot à effacer : ");
-                int id = int.Parse(Console.ReadLine());
-
-                try
-                {
-                    using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
-                    {
-                        cmd.CommandText = "DELETE FROM lot WHERE LOT_ID = @id;";
-                        cmd.Parameters.AddWithValue("@id", id);
-
-                        Console.Write("\nVoulez-vouz effacer un autre lot (O/N) ? : ");
-
-                        choixEffacerLot = char.Parse(Console.ReadLine().ToUpper());
-                        nbreEffacés += cmd.ExecuteNonQuery();
-                    }
-
-                }
-                catch (MySqlException ex)
-                {
-                    Console.Write("\nAttention il y a eu le problème suivant : ");
-                    Console.Write(ex.Message);
-                    Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
-                    Console.ReadKey();
-                    Console.Write("\n\n");
-                }
-            } while (choixEffacerLot != 'N');
-
-            Console.WriteLine("\nNombre de lots effacés : {0}\n", nbreEffacés);
-            Console.Write("Veuillez appuyer sur une touche pour continuer... ");
-            Console.ReadKey();
         }
     }
 }

@@ -7,11 +7,15 @@ using MySql.Data.MySqlClient;
 
 namespace M2_Gestion_Flexible_Chariot
 {
+    /// <summary>
+    /// Classe qui contient la gestion des statuts d'un lot.
+    /// </summary>
     class GestionStatuts
     {
         /// <summary>
         /// Obtient l'ID du statut "En attente de production".
         /// </summary>
+        /// <returns>l'ID du statut.</returns>
         public static int ObtenirIDStatut()
         {
             int IDStatut = 0;
@@ -32,6 +36,7 @@ namespace M2_Gestion_Flexible_Chariot
                 Console.ReadKey();
                 Console.Write("\n\n");
             }
+
             return IDStatut;
         }
     }

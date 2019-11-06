@@ -7,6 +7,9 @@ using MySql.Data.MySqlClient;
 
 namespace M2_Gestion_Flexible_Chariot
 {
+    /// <summary>
+    /// Classe qui contient la gestion des événements.
+    /// </summary>
     public class GestionEvénements
     {
         /// <summary>
@@ -33,13 +36,13 @@ namespace M2_Gestion_Flexible_Chariot
                         {
                             while (reader.Read())
                             {
-                                listeLots.Add(reader.GetString(reader.GetOrdinal("LOT_ID")));
+                                listeLots.Add(reader.GetString(reader.GetOrdinal("LOT_ID"))); // Permet d'ajouter à une liste tous les ID de la table lot.
                             }
                         }
 
                         if (listeLots.Contains(IDHistoriqueLot))
                         {
-                            cmd.CommandText = $"SELECT EVE_Libelle, EVE_Date, LOT_ID FROM evenement WHERE LOT_ID = {IDHistoriqueLot} ";
+                            cmd.CommandText = $"SELECT EVE_Libelle, EVE_Date, LOT_ID FROM evenement WHERE LOT_ID = {IDHistoriqueLot}";
                             string colonnes = "Libellé {0,-25} Date de création {0,-25} ID du lot\n";
                             Console.Write(string.Format(colonnes, "", "", ""));
 
@@ -58,7 +61,7 @@ namespace M2_Gestion_Flexible_Chariot
                                 }
                                 Console.Write("\n");
                                 Console.WriteLine("{0} événement(s) affiché(s).", compteur);
-                                GestionMenuPrincipale.EntrerSaisieUtilisateur();
+                                GestionMenuPrincipale.AttenteSaisieUtilisateur();
                             }
                         }
 
@@ -74,7 +77,7 @@ namespace M2_Gestion_Flexible_Chariot
                 {
                     Console.Write("\nAttention il y a eu le problème suivant : ");
                     Console.Write(ex.Message);
-                    GestionMenuPrincipale.EntrerSaisieUtilisateur();
+                    GestionMenuPrincipale.AttenteSaisieUtilisateur();
                     Console.Write("\n\n");
                 }
             } while (!listeLots.Contains(IDHistoriqueLot));

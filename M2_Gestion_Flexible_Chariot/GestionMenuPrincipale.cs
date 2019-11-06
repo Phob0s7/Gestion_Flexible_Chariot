@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 
 namespace M2_Gestion_Flexible_Chariot
 {
+    /// <summary>
+    /// Classe qui contient la gestion du menu principale.
+    /// </summary>
     public class GestionMenuPrincipale
     {
         /// <summary>
         /// Permet d'afficher le menu principale.
         /// </summary>
-        public static void AffichageMenuPrincipale()
+        public static void AfficherMenuPrincipale()
         {
             Console.Clear();
             Console.WriteLine("__________________________________________________");
@@ -27,30 +30,31 @@ namespace M2_Gestion_Flexible_Chariot
         /// <summary>
         /// Permet de saisir le choix de l'utilisateur en fonction du menu principale.
         /// </summary>
-        public static void ChoixMenuPrincipale()
+        public static void ChoisirMenuPrincipale()
         {
-            string choixMenuPrincipale = "";
+            string choisirMenuPrincipale = "";
+
             do
             {
                 Console.Write("Votre choix : ");
-                choixMenuPrincipale = Console.ReadLine();
+                choisirMenuPrincipale = Console.ReadLine();
 
-                switch (choixMenuPrincipale)
+                switch (choisirMenuPrincipale)
                 {
                     case "1":
-                        GestionRecettes.AffichageMenuRecettes();
-                        GestionRecettes.ChoixMenuRecettes();
+                        GestionRecettes.AfficherMenuRecettes();
+                        GestionRecettes.ChoisirMenuRecettes();
                         break;
 
                     case "2":
-                        GestionLots.AffichageMenuLots();
-                        GestionLots.ChoixMenuLots();
+                        GestionLots.AfficherMenuLots();
+                        GestionLots.ChoisirMenuLots();
                         break;
 
                     case "3":
-                        GestionLots.AffichageLots();
+                        GestionLots.AfficherLots();
                         GestionEvénements.AfficherHistoriqueLot();
-                        AffichageMenuPrincipale();
+                        AfficherMenuPrincipale();
                         break;
 
                     case "4":
@@ -58,16 +62,16 @@ namespace M2_Gestion_Flexible_Chariot
                         break;
 
                     default:
-                        ErreurSaisieMenu();
+                        AfficherErreurSaisieMenu();
                         break;
                 }
-            } while (choixMenuPrincipale != "4");
+            } while (choisirMenuPrincipale != "4");
         }
 
         /// <summary>
         /// Permet d'écrire quelque chose par défaut lors d'une erreur.
         /// </summary>
-        public static void ErreurSaisieMenu()
+        public static void AfficherErreurSaisieMenu()
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("\nVous n'avez pas saisi un choix correcte.\n");
@@ -75,9 +79,9 @@ namespace M2_Gestion_Flexible_Chariot
         }
 
         /// <summary>
-        /// Attend la saisi d'une touche auprès de l'utlisateur.
+        /// Attend la saisie d'une touche auprès de l'utilisateur.
         /// </summary>
-        public static void EntrerSaisieUtilisateur()
+        public static void AttenteSaisieUtilisateur()
         {
             Console.Write("\nVeuillez appuyer sur une touche pour continuer...");
             Console.ReadKey();
