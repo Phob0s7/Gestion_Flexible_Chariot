@@ -13,7 +13,7 @@
         {
             bool connexionAutorisée = GestionBaseDeDonnée.ConnectToDB("gestion_flexible_chariot", "root", "");
           //bool connexionAutorisée = GestionBaseDeDonnée.ConnectToDB("villsyl_bourrob_gestion_flexible_chariot", "villsyl", "EST2019");
-
+          //
             if (connexionAutorisée)
             {
                 GestionMenuPrincipale.AfficherMenuPrincipale();
