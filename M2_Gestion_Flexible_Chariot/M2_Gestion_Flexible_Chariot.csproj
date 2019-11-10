@@ -52,7 +52,6 @@
     <Compile Include="GestionPas.cs" />
     <Compile Include="GestionRecettes.cs" />
     <Compile Include="GestionMenuPrincipale.cs" />
-    <Compile Include="GestionStatuts.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

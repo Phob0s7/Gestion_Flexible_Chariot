@@ -68,12 +68,13 @@ namespace M2_Gestion_Flexible_Chariot
         /// </summary>
         public static void CréationLots()
         {
+            const int ID_STATUT_EN_ATTENTE = 1;
+
             int nbreLots = 1;
             int nbreAjout = 0;
             int qtePièceRéalisée = 0;
             int qtePièceAProduire = 0;
             string IDRecette = "";
-            int IDStatutAttente = 0;
             string choixCréationLots = "";
 
             List<string> listeIDRecette = new List<string>();
@@ -89,8 +90,8 @@ namespace M2_Gestion_Flexible_Chariot
 
                 do
                 {
-                    IDRecette = SaisirIDRecette(); ;
-                    IDStatutAttente = GestionStatuts.ObtenirIDStatut();
+                    Console.Write("\nID de la recette à associer à ce lot : ");
+                    IDRecette = Console.ReadLine(); ;
 
                     try
                     {
@@ -106,9 +107,9 @@ namespace M2_Gestion_Flexible_Chariot
                                 cmd.Parameters.AddWithValue("@pièceProduire", qtePièceAProduire);
                                 cmd.Parameters.AddWithValue("@date", dateTime);
                                 cmd.Parameters.AddWithValue("@RECID", IDRecette);
-                                cmd.Parameters.AddWithValue("@STAID", IDStatutAttente);
+                                cmd.Parameters.AddWithValue("@STAID", ID_STATUT_EN_ATTENTE);
 
-                                choixCréationLots = GestionPas.ErreurSaisirChoix("\nVoulez-vous créer un nouveau lot ? (O/N) ", choixCréationLots);
+                                choixCréationLots = GestionPas.ErreurSaisirChoix("\nVoulez-vous créer un nouveau lot ? (O/N) ");
                                 nbreAjout += cmd.ExecuteNonQuery();
                                 nbreLots++;
                             }
@@ -167,19 +168,7 @@ namespace M2_Gestion_Flexible_Chariot
 
             return qtePièceAProduire;
         }
-
-        /// <summary>
-        /// Demande à l'utilisateur l'ID d'une recette.
-        /// </summary>
-        public static string SaisirIDRecette()
-        {
-            string IDRecette = "";
-
-            Console.Write("\nID de la recette à associer à ce lot : ");
-            IDRecette = Console.ReadLine();
-
-            return IDRecette;
-        }
+       
         /// <summary>
         /// Permet d'afficher la liste des lots.
         /// </summary>

@@ -5,7 +5,7 @@ using System;
 namespace M2_Gestion_Flexible_Chariot
 {
     /// <summary>
-    /// Classe qui contient la gestion de la base de donnée.
+    /// Classe qui contient la gestion de la base de données.
     /// </summary>
     static class GestionBaseDeDonnée
     {

@@ -1,7 +1,7 @@
 ﻿namespace M2_Gestion_Flexible_Chariot
 {
     /// <summary>
-    /// Classe qui contient le programme principale.
+    /// Classe qui contient le programme principal.
     /// </summary>
     class Program
     {

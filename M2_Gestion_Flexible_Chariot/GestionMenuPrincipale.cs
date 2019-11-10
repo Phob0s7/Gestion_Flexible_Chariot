@@ -8,7 +8,7 @@ namespace M2_Gestion_Flexible_Chariot
     public class GestionMenuPrincipale
     {
         /// <summary>
-        /// Permet d'afficher le menu principale.
+        /// Permet d'afficher le menu principal.
         /// </summary>
         public static void AfficherMenuPrincipale()
         {

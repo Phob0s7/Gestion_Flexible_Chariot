@@ -45,7 +45,7 @@ namespace M2_Gestion_Flexible_Chariot
                         cmd.Parameters.AddWithValue("@quittance", quittancePas);
                         cmd.Parameters.AddWithValue("@IDREC", IDRecette);
 
-                        choixCréationPas = ErreurSaisirChoix("\nVoulez-vous créer à nouveau un pas (O/N) ? : ", choixCréationPas);
+                        choixCréationPas = ErreurSaisirChoix("\nVoulez-vous créer à nouveau un pas (O/N) ? : ");
                         Console.WriteLine("");
                         nbreAjout += cmd.ExecuteNonQuery();
                         nombrePas++;
@@ -91,10 +91,11 @@ namespace M2_Gestion_Flexible_Chariot
         /// <summary>
         /// Répète l'erreur de saisie O ou N.
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="choixCréation"></param>
-        public static string ErreurSaisirChoix(string message, string choixCréation)
+        /// <param name="message">message à afficher</param>
+        public static string ErreurSaisirChoix(string message)
         {
+            string choixCréation = "";
+
             bool saisieValide = false;
             do
             {
@@ -281,68 +282,6 @@ namespace M2_Gestion_Flexible_Chariot
             } while (quittancePas != "0" && quittancePas != "1");
 
             return quittanceBooléen;
-        }
-
-        /// <summary>
-        /// Sélectionne l'ID le plus grand des recettes, ensuite, permet de saisir l'ID de la recette à associer.
-        /// </summary>
-        /// <returns> l'ID de la recette</returns>
-        public static string SaisieIDRecette(ref string IDRecette)
-        {
-            string saisieUtilisateur = "";
-            bool saisieValide = false;
-            int résultat = 0;
-
-            try
-            {
-                using (MySqlCommand cmd = GestionBaseDeDonnée.GetMySqlConnection().CreateCommand())
-                {
-                    cmd.CommandText = "SELECT MAX(REC_ID) AS RECID, REC_Nom, REC_DateCreation FROM recette";
-                    Console.Write("ID\t");
-                    Console.Write("Nom\t\t".PadLeft(6));
-                    Console.Write(" Date de création\n".PadLeft(12));
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        int compteur = 0;
-                        while (reader.Read())
-                        {
-                            Console.WriteLine("\n{0}\t {1}\t\t {2}".PadLeft(10), reader["RECID"], reader["REC_Nom"], reader["REC_DateCreation"]);
-                            compteur++;
-                        }
-
-                        Console.WriteLine("\n{0} recettes affichées.\n", compteur);
-                    }
-                }
-            }
-            catch (MySqlException ex)
-            {
-                Console.Write("\nAttention il y a eu le problème suivant : ");
-                Console.Write(ex.Message);
-                GestionMenuPrincipale.AttenteSaisieUtilisateur();
-                Console.Write("\n\n");
-            }
-
-            do
-            {
-                Console.Write("Entrer le n° de l'ID de la recette : ");
-                saisieUtilisateur = Console.ReadLine();
-
-                if (saisieUtilisateur != IDRecette || !int.TryParse(saisieUtilisateur, out résultat))
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("\nVeuillez saisir l'ID correcte de la recette à insérer.\n");
-                    Console.ResetColor();
-                }
-
-                else
-                {
-                    IDRecette = saisieUtilisateur;
-                    saisieValide = true;
-                }
-
-            } while (saisieValide == false);
-
-            return IDRecette;
         }
 
         /// <summary>

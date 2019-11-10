@@ -66,7 +66,7 @@ namespace M2_Gestion_Flexible_Chariot
                             else
                             {
                                 Console.ForegroundColor = ConsoleColor.Red;
-                                Console.Write("L'ID du lot n'existe pas, veuillez réessayer.");
+                                Console.Write("L'ID du lot n'existe pas, veuillez réessayer.\n");
                                 Console.ResetColor();
 
                             }
